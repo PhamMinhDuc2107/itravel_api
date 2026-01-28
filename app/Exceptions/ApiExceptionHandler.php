@@ -95,16 +95,22 @@ class ApiExceptionHandler
     }
 
 
-    private static function jsonResponse(int $statusCode, AppErrorEnum $errorEnum, ?string $message = null, $errors = null): JsonResponse
-    {
+    private static function jsonResponse(
+        int $statusCode,
+        AppErrorEnum $errorEnum,
+        ?string $message = null,
+        $errors = null
+    ): JsonResponse {
         return response()->json([
-            'data' => $errors,
-            'meta' => [
+            'data' => [
                 'status'      => $errorEnum->value,
-                'message'     => $message ?? $errorEnum->message(),
                 'status_code' => $statusCode,
-                'timestamp'   => now()->toIso8601String(),
-                'request_id'  => AppContext::getRequestId(),
+                'message'     => $message ?? $errorEnum->message(),
+                'errors'      => $errors,
+            ],
+            'meta' => [
+                'timestamp'  => now()->toIso8601String(),
+                'request_id' => AppContext::getRequestId(),
             ]
         ], $statusCode);
     }

@@ -1,13 +1,12 @@
 <?php
 
-// app/Repositories/Base/BaseRepository.php
 namespace App\Repositories\Base;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Container\Container;
-use Exception;
+use Illuminate\Container\Container as App;
 
 /**
  * @template T of Model
@@ -16,86 +15,380 @@ use Exception;
 abstract class BaseRepository implements RepositoryInterface
 {
     /**
-     * @var Model
+     * @var App
+     */
+    protected $app;
+
+    /**
+     * @var T
      */
     protected $model;
 
-    public function __construct()
+    /**
+     * @var array
+     */
+    protected $relations = [];
+
+    /**
+     * @var string|null
+     */
+    protected $orderByColumn;
+
+    /**
+     * @var string
+     */
+    protected $orderByDirection = 'asc';
+
+    /**
+     * BaseRepository constructor
+     */
+    public function __construct(App $app)
     {
-        $this->setModel();
+        $this->app = $app;
+        $this->makeModel();
     }
 
     /**
-     * Lấy tên Model tương ứng (Các class con phải định nghĩa hàm này)
+     * Specify Model class name
+     *
      * @return string
      */
-    abstract public function getModel();
+    abstract protected function model(): string;
 
     /**
-     * Khởi tạo Model
+     * Make Model instance
+     *
+     * @return T
+     * @throws \Exception
      */
-    public function setModel()
+    protected function makeModel(): Model
     {
-        // Sử dụng Service Container để khởi tạo Model
-        $model = app()->make($this->getModel());
+        $model = $this->app->make($this->model());
 
         if (!$model instanceof Model) {
-            throw new Exception("Class {$this->getModel()} must be an instance of Illuminate\\Database\\Eloquent\\Model");
+            throw new \Exception("Class {$this->model()} must be an instance of Illuminate\\Database\\Eloquent\\Model");
         }
 
-        $this->model = $model;
+        return $this->model = $model;
     }
 
+    /**
+     * Get Model instance
+     */
+    public function getModel(): Model
+    {
+        return $this->model;
+    }
+
+    /**
+     * Reset Model instance
+     */
+    public function resetModel(): void
+    {
+        $this->makeModel();
+        $this->relations = [];
+        $this->orderByColumn = null;
+        $this->orderByDirection = 'asc';
+    }
+
+    /**
+     * Get new query builder instance
+     */
+    public function newQuery(): Builder
+    {
+        $query = $this->model->newQuery();
+
+        if (!empty($this->relations)) {
+            $query->with($this->relations);
+        }
+
+        if ($this->orderByColumn) {
+            $query->orderBy($this->orderByColumn, $this->orderByDirection);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Get all records
+     */
     public function getAll(array $columns = ['*'], array $relations = []): Collection
     {
-        return $this->model->with($relations)->get($columns);
+        $query = $this->newQuery();
+
+        if (!empty($relations)) {
+            $query->with($relations);
+        }
+
+        return $query->get($columns);
     }
 
+    /**
+     * Paginate records
+     */
     public function paginate(int $perPage = 15, array $columns = ['*'], array $relations = []): LengthAwarePaginator
     {
-        return $this->model->with($relations)->paginate($perPage, $columns);
+        $query = $this->newQuery();
+
+        if (!empty($relations)) {
+            $query->with($relations);
+        }
+
+        $result = $query->paginate($perPage, $columns);
+        $this->resetModel();
+
+        return $result;
     }
 
+    /**
+     * Find record by ID
+     */
     public function find(int|string $id, array $columns = ['*'], array $relations = []): ?Model
     {
-        return $this->model->with($relations)->find($id, $columns);
+        $query = $this->newQuery();
+
+        if (!empty($relations)) {
+            $query->with($relations);
+        }
+
+        $result = $query->find($id, $columns);
+        $this->resetModel();
+
+        return $result;
     }
 
+    /**
+     * Find record by ID or fail
+     */
     public function findOrFail(int|string $id, array $columns = ['*'], array $relations = []): Model
     {
-        return $this->model->with($relations)->findOrFail($id, $columns);
+        $query = $this->newQuery();
+
+        if (!empty($relations)) {
+            $query->with($relations);
+        }
+
+        $result = $query->findOrFail($id, $columns);
+        $this->resetModel();
+
+        return $result;
     }
 
+    /**
+     * Find record by conditions
+     */
     public function findBy(array $conditions, array $columns = ['*'], array $relations = []): ?Model
     {
-        return $this->model->with($relations)->where($conditions)->first($columns);
+        $query = $this->newQuery();
+
+        if (!empty($relations)) {
+            $query->with($relations);
+        }
+
+        foreach ($conditions as $field => $value) {
+            if (is_array($value)) {
+                $query->whereIn($field, $value);
+            } else {
+                $query->where($field, $value);
+            }
+        }
+
+        $result = $query->first($columns);
+        $this->resetModel();
+
+        return $result;
     }
 
+    /**
+     * Get all records matching conditions
+     */
+    public function findAllBy(array $conditions, array $columns = ['*'], array $relations = []): Collection
+    {
+        $query = $this->newQuery();
+
+        if (!empty($relations)) {
+            $query->with($relations);
+        }
+
+        foreach ($conditions as $field => $value) {
+            if (is_array($value)) {
+                $query->whereIn($field, $value);
+            } else {
+                $query->where($field, $value);
+            }
+        }
+
+        $result = $query->get($columns);
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
+     * Create new record
+     */
     public function create(array $data): Model
     {
-        return $this->model->create($data);
+        $result = $this->model->create($data);
+        $this->resetModel();
+
+        return $result;
     }
 
+    /**
+     * Update record by ID
+     */
     public function update(int|string $id, array $data): Model|bool
     {
         $record = $this->find($id);
 
-        if ($record) {
-            $record->update($data);
-            return $record;
+        if (!$record) {
+            return false;
         }
 
-        return false;
+        $record->update($data);
+        $this->resetModel();
+
+        return $record;
     }
 
+    /**
+     * Update or create record
+     */
+    public function updateOrCreate(array $conditions, array $data): Model
+    {
+        $result = $this->model->updateOrCreate($conditions, $data);
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
+     * Delete record by ID
+     */
     public function delete(int|string $id): bool
     {
         $record = $this->find($id);
 
-        if ($record) {
-            return $record->delete();
+        if (!$record) {
+            return false;
         }
 
-        return false;
+        $result = $record->delete();
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
+     * Delete multiple records by IDs
+     */
+    public function deleteMultiple(array $ids): int
+    {
+        $result = $this->model->destroy($ids);
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
+     * Delete records by conditions
+     */
+    public function deleteBy(array $conditions): int
+    {
+        $query = $this->newQuery();
+
+        foreach ($conditions as $field => $value) {
+            if (is_array($value)) {
+                $query->whereIn($field, $value);
+            } else {
+                $query->where($field, $value);
+            }
+        }
+
+        $result = $query->delete();
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
+     * Count records
+     */
+    public function count(array $conditions = []): int
+    {
+        $query = $this->newQuery();
+
+        if (!empty($conditions)) {
+            foreach ($conditions as $field => $value) {
+                if (is_array($value)) {
+                    $query->whereIn($field, $value);
+                } else {
+                    $query->where($field, $value);
+                }
+            }
+        }
+
+        $result = $query->count();
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
+     * Check if record exists
+     */
+    public function exists(array $conditions): bool
+    {
+        $query = $this->newQuery();
+
+        foreach ($conditions as $field => $value) {
+            if (is_array($value)) {
+                $query->whereIn($field, $value);
+            } else {
+                $query->where($field, $value);
+            }
+        }
+
+        $result = $query->exists();
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
+     * Get first record
+     */
+    public function first(array $columns = ['*'], array $relations = []): ?Model
+    {
+        $query = $this->newQuery();
+
+        if (!empty($relations)) {
+            $query->with($relations);
+        }
+
+        $result = $query->first($columns);
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
+     * Load relations
+     */
+    public function with(array $relations): self
+    {
+        $this->relations = $relations;
+        return $this;
+    }
+
+    /**
+     * Order records
+     */
+    public function orderBy(string $column, string $direction = 'asc'): self
+    {
+        $this->orderByColumn = $column;
+        $this->orderByDirection = $direction;
+        return $this;
     }
 }
