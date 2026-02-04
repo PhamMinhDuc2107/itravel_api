@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Repositories\Eloquent;
+namespace App\Repository\Eloquent;
 
-use App\Models\AdminModel;
-use App\Repositories\Base\BaseRepository;
-use App\Repositories\Contracts\AdminRepositoryInterface;
+use App\Model\AdminModel;
+use App\Repository\Base\BaseRepository;
+use App\Repository\Contract\AdminRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class AdminRepository extends BaseRepository implements AdminRepositoryInterface

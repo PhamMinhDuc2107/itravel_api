@@ -3,7 +3,7 @@
 namespace App\Http\Responses;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Enums\AppErrorEnum;
+use App\Enum\AppErrorEnum;
 
 class SuccessResponse extends BaseApiResponse
 {

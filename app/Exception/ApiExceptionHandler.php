@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions;
+namespace App\Exception;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -12,9 +12,9 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Throwable;
 
-use App\Exceptions\BusinessException;
-use App\Exceptions\NotFoundException;
-use App\Enums\AppErrorEnum;
+use App\Exception\BusinessException;
+use App\Exception\NotFoundException;
+use App\Enum\AppErrorEnum;
 use App\Context\AppContext;
 
 class ApiExceptionHandler

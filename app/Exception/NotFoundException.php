@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Exceptions;
+namespace App\Exception;
 
-use App\Enums\AppErrorEnum;
+use App\Enum\AppErrorEnum;
 
 class NotFoundException extends BusinessException
 {
     /**
-     * @param string|null $resource 
+     * @param string|null $resource
      * @param string|int|null $id
      */
     public function __construct(?string $resource = null, string|int|null $id = null)

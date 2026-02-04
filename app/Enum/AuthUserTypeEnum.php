@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Enums;
+namespace App\Enum;
 
-use App\Models\AdminModel;
+use App\Model\AdminModel;
 
 enum AuthUserTypeEnum: string
 {

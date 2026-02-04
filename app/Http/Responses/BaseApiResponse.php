@@ -5,7 +5,7 @@ namespace App\Http\Responses;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use App\Context\AppContext;
-use App\Enums\AppErrorEnum;
+use App\Enum\AppErrorEnum;
 
 abstract class BaseApiResponse implements Responsable
 {

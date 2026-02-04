@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Services\Admin;
+namespace App\Service\Admin;
 
-use App\Enums\ActiveStateEnum;
-use App\Enums\AppErrorEnum;
-use App\Enums\AuthUserTypeEnum;
-use App\Exceptions\BusinessException;
-use App\Repositories\Contracts\AdminRepositoryInterface;
+use App\Enum\ActiveStateEnum;
+use App\Enum\AppErrorEnum;
+use App\Enum\AuthUserTypeEnum;
+use App\Exception\BusinessException;
+use App\Model\AdminModel;
+use App\Repository\Contract\AdminRepositoryInterface;
 use App\Support\Jwt\JwtSupport;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -24,16 +26,14 @@ class AuthService
         $admin = $this->adminRepository->getAdminByEmail($email);
 
         if (! $admin) {
-            throw new BusinessException(
+            throw new AuthenticationException(
                 __('auth.invalid_credentials'),
-                AppErrorEnum::UNAUTHORIZED->value
             );
         }
 
         if (! Hash::check($password, $admin->password)) {
-            throw new BusinessException(
+            throw new AuthenticationException(
                 __('auth.invalid_credentials'),
-                AppErrorEnum::UNAUTHORIZED->value
             );
         }
 
@@ -44,13 +44,37 @@ class AuthService
             );
         }
 
-
         $accessToken = $this->jwt->encode([
             'sub'       => $admin->id,
             'auth_type' => AuthUserTypeEnum::ADMIN->value,
         ]);
 
+        $plainRefreshToken = $this->createRefreshToken($admin);
+
+        return [
+            'access_token'  => $accessToken,
+            'refresh_token' => $plainRefreshToken,
+            'token_type'    => 'Bearer',
+            'expires_in'    => config('jwt.ttl'),
+        ];
+    }
+    public function logout(AdminModel $admin): void
+    {
+        $admin->refreshTokens()->delete();
+
+    }
+
+    public function resetPassword(): void
+    {
+
+    }
+    private function createRefreshToken(AdminModel $admin): string
+    {
         $plainRefreshToken = Str::random(64);
+
+        $admin->refreshTokens()
+            ->where('auth_type', AuthUserTypeEnum::ADMIN)
+            ->delete();
 
         $admin->refreshTokens()->create([
             'auth_type'  => AuthUserTypeEnum::ADMIN,
@@ -59,12 +83,6 @@ class AuthService
             'user_agent' => request()->userAgent(),
             'ip_address' => request()->ip(),
         ]);
-
-        return [
-            'access_token'  => $accessToken,
-            'refresh_token' => $plainRefreshToken,
-            'token_type'    => 'Bearer',
-            'expires_in'    => config('jwt.ttl'),
-        ];
+        return $plainRefreshToken;
     }
 }

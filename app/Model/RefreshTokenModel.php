@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Model;
 
-use App\Enums\AuthUserTypeEnum;
+use App\Enum\AuthUserTypeEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 

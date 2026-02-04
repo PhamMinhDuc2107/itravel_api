@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Model;
 
-use App\Enums\ActiveStateEnum;
+use App\Enum\ActiveStateEnum;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Notifications\Notifiable;
-use App\Models\RefreshTokenModel;
+use App\Model\RefreshTokenModel;
 
 class AdminModel extends Authenticatable
 {
