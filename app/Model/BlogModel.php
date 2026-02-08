@@ -24,7 +24,7 @@ class BlogModel extends Model
         'excerpt',
         'content',
         'image',
-        'blog_category_id',
+        'category_id',
         'author_id',
         'status',
         'is_featured',
@@ -44,7 +44,7 @@ class BlogModel extends Model
 
     public function category()
     {
-        return $this->belongsTo(BlogCategoryModel::class, 'blog_category_id', 'blog_category_id');
+        return $this->belongsTo(BlogCategoryModel::class, 'category_id');
     }
 
     public function author()

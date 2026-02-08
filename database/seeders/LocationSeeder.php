@@ -30,7 +30,7 @@ class LocationSeeder extends Seeder
             $data[] = [
                 'name' => $location['name'],
                 'slug' => Str::slug($location['name']),
-                'parent_location_id' => null,
+                'parent_id' => null,
                 'description' => fake()->paragraph(3),
                 'content' => fake()->paragraphs(5, true),
                 'image' => null,

@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::dropIfExists('categories');
         Schema::create('categories', function (Blueprint $table) {
-            $table->id('category_id');
+            $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->unsignedBigInteger('parent_category_id')->nullable()->index();
-            $table->foreign('parent_category_id')
-                ->references('category_id')
+            $table->unsignedBigInteger('parent_id')->nullable()->index();
+            $table->foreign('parent_id')
+                ->references('id')
                 ->on('categories')
                 ->nullOnDelete();
 

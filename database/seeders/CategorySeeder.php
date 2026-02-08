@@ -28,7 +28,7 @@ class CategorySeeder extends Seeder
             $data[] = [
                 'name' => $name,
                 'slug' => Str::slug($name),
-                'parent_category_id' => null,
+                'parent_id' => null,
                 'description' => fake()->sentence(10),
                 'position' => $index,
                 'status' => 1,

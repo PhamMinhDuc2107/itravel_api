@@ -9,7 +9,7 @@ class BlogCategoryResource extends BaseResource
     public function toArray($request): array
     {
         return [
-            'id' => $this->blog_category_id,
+            'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
@@ -19,6 +19,7 @@ class BlogCategoryResource extends BaseResource
             'meta_description' => $this->meta_description,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+            'deleted_at' => $this->deleted_at?->format('Y-m-d H:i:s'),
         ];
     }
 }

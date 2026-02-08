@@ -22,7 +22,7 @@ class UpdateRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('blog_categories', 'slug')->ignore($id, 'blog_category_id')
+                Rule::unique('blog_categories', 'slug')->ignore($id)
             ],
             'description' => ['nullable', 'string'],
             'position' => ['nullable', 'integer', 'min:0'],

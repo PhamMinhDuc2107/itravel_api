@@ -20,7 +20,7 @@ class StoreRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255', 'unique:locations,slug'],
-            'parent_location_id' => ['nullable', 'integer', 'exists:locations,location_id'],
+            'parent_id' => ['nullable', 'integer', 'exists:locations,id'],
             'description' => ['nullable', 'string'],
             'content' => ['nullable', 'string'],
             'image' => [
@@ -57,7 +57,7 @@ class StoreRequest extends FormRequest
             'name.max' => __('validation.custom.name.max'),
             'slug.required' => 'Slug is required',
             'slug.unique' => 'Slug already exists',
-            'parent_location_id.exists' => 'Parent location does not exist',
+            'parent_id.exists' => 'Parent location does not exist',
             'type.required' => 'Type is required',
             'type.enum' => 'Invalid location type',
             'status.required' => 'Status is required',

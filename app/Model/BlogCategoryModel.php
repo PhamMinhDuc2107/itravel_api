@@ -11,10 +11,9 @@ class BlogCategoryModel extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'blog_categories';
-    protected $primaryKey = 'blog_category_id';
 
     public array $searchable = ['name', 'slug', 'description'];
-    public array $sortable = ['blog_category_id', 'created_at', 'name', 'position', 'status'];
+    public array $sortable = ['id', 'created_at', 'name', 'position', 'status'];
 
     protected $fillable = [
         'name',
@@ -32,7 +31,7 @@ class BlogCategoryModel extends Model
 
     public function blogs()
     {
-        return $this->hasMany(BlogModel::class, 'blog_category_id', 'blog_category_id');
+        return $this->hasMany(BlogModel::class, 'category_id');
     }
 }
 

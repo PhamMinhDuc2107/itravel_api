@@ -25,12 +25,12 @@ class UpdateRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('locations', 'slug')->ignore($id, 'location_id')
+                Rule::unique('locations', 'slug')->ignore($id)
             ],
-            'parent_location_id' => [
+            'parent_id' => [
                 'nullable',
                 'integer',
-                'exists:locations,location_id',
+                'exists:locations,id',
                 Rule::notIn([$id])
             ],
             'description' => ['nullable', 'string'],
@@ -69,8 +69,8 @@ class UpdateRequest extends FormRequest
             'name.max' => __('validation.custom.name.max'),
             'slug.required' => 'Slug is required',
             'slug.unique' => 'Slug already exists',
-            'parent_location_id.exists' => 'Parent location does not exist',
-            'parent_location_id.not_in' => 'Location cannot be its own parent',
+            'parent_id.exists' => 'Parent location does not exist',
+            'parent_id.not_in' => 'Location cannot be its own parent',
             'type.required' => 'Type is required',
             'type.enum' => 'Invalid location type',
             'status.required' => 'Status is required',

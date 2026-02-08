@@ -53,7 +53,7 @@ return new class extends Migration
 
         Schema::table('hotels', function (Blueprint $table) {
             $table->foreign('location_id')
-                ->references('location_id')
+                ->references('id')
                 ->on('locations')
                 ->cascadeOnDelete();
         });

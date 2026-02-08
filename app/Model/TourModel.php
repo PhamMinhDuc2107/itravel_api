@@ -62,17 +62,17 @@ class TourModel extends Model
 
     public function category()
     {
-        return $this->belongsTo(CategoryModel::class, 'category_id', 'category_id');
+        return $this->belongsTo(CategoryModel::class, 'category_id');
     }
 
     public function departureLocation()
     {
-        return $this->belongsTo(LocationModel::class, 'departure_location_id', 'location_id');
+        return $this->belongsTo(LocationModel::class, 'departure_location_id');
     }
 
     public function destinationLocation()
     {
-        return $this->belongsTo(LocationModel::class, 'destination_location_id', 'location_id');
+        return $this->belongsTo(LocationModel::class, 'destination_location_id');
     }
 
     public function departures()

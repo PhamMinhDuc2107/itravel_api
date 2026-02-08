@@ -61,7 +61,7 @@ class HotelModel extends Model
 
     public function location()
     {
-        return $this->belongsTo(LocationModel::class, 'location_id', 'location_id');
+        return $this->belongsTo(LocationModel::class, 'location_id');
     }
 
     public function amenities()

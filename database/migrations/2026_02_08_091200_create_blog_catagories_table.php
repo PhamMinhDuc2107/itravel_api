@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('blog_categories');
         Schema::create('blog_categories', function (Blueprint $table) {
-            $table->id('blog_category_id');
+            $table->id();
             $table->string('name')->index(); 
             $table->string('slug')->unique(); 
             $table->text('description')->nullable();

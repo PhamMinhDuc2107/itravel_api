@@ -12,12 +12,12 @@ return new class extends Migration
     {
         Schema::dropIfExists('locations');
         Schema::create('locations', function (Blueprint $table) {
-            $table->id('location_id');
+            $table->id();
             
             $table->string('name')->index();
             $table->string('slug')->unique();
             
-            $table->unsignedBigInteger('parent_location_id')->nullable()->index();
+            $table->unsignedBigInteger('parent_id')->nullable()->index();
 
             $table->text('description')->nullable();
             $table->longText('content')->nullable();
@@ -47,8 +47,8 @@ return new class extends Migration
         });
 
         Schema::table('locations', function (Blueprint $table) {
-            $table->foreign('parent_location_id')
-                ->references('location_id')
+            $table->foreign('parent_id')
+                ->references('id')
                 ->on('locations')
                 ->nullOnDelete();
         });

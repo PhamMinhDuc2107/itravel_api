@@ -11,7 +11,7 @@ class BlogSeeder extends Seeder
 {
     public function run(): void
     {
-        $blogCategoryIds = DB::table('blog_categories')->pluck('blog_category_id')->toArray();
+        $blogCategoryIds = DB::table('blog_categories')->pluck('id')->toArray();
         $adminIds = DB::table('admins')->pluck('id')->toArray();
 
         if (empty($adminIds)) {
@@ -40,7 +40,7 @@ class BlogSeeder extends Seeder
                 'excerpt' => fake()->sentence(20),
                 'content' => fake()->paragraphs(10, true),
                 'image' => null,
-                'blog_category_id' => !empty($blogCategoryIds) ? fake()->randomElement($blogCategoryIds) : null,
+                'category_id' => !empty($blogCategoryIds) ? fake()->randomElement($blogCategoryIds) : null,
                 'author_id' => fake()->randomElement($adminIds),
                 'status' => fake()->randomElement([BlogStatusEnum::Draft->value, BlogStatusEnum::Published->value, BlogStatusEnum::Pending->value]),
                 'is_featured' => fake()->randomElement([0, 1]),

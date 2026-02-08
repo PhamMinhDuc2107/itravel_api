@@ -11,8 +11,8 @@ class TourSeeder extends Seeder
 {
     public function run(): void
     {
-        $categoryIds = DB::table('categories')->pluck('category_id')->toArray();
-        $locationIds = DB::table('locations')->pluck('location_id')->toArray();
+        $categoryIds = DB::table('categories')->pluck('id')->toArray();
+        $locationIds = DB::table('locations')->pluck('id')->toArray();
 
         if (empty($categoryIds) || empty($locationIds)) {
             $this->command->warn('Categories or Locations not found. Please run CategorySeeder and LocationSeeder first.');

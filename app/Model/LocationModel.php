@@ -14,15 +14,14 @@ class LocationModel extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'locations';
-    protected $primaryKey = 'location_id';
 
     public array $searchable = ['name', 'slug', 'description', 'type'];
-    public array $sortable = ['location_id', 'created_at', 'name', 'position', 'status', 'type'];
+    public array $sortable = ['id', 'created_at', 'name', 'position', 'status', 'type'];
 
     protected $fillable = [
         'name',
         'slug',
-        'parent_location_id',
+        'parent_id',
         'description',
         'content',
         'image',
@@ -48,27 +47,27 @@ class LocationModel extends Model
 
     public function parent()
     {
-        return $this->belongsTo(LocationModel::class, 'parent_location_id', 'location_id');
+        return $this->belongsTo(LocationModel::class, 'parent_id');
     }
 
     public function children()
     {
-        return $this->hasMany(LocationModel::class, 'parent_location_id', 'location_id');
+        return $this->hasMany(LocationModel::class, 'parent_id');
     }
 
     public function toursAsDeparture()
     {
-        return $this->hasMany(TourModel::class, 'departure_location_id', 'location_id');
+        return $this->hasMany(TourModel::class, 'departure_location_id');
     }
 
     public function toursAsDestination()
     {
-        return $this->hasMany(TourModel::class, 'destination_location_id', 'location_id');
+        return $this->hasMany(TourModel::class, 'destination_location_id');
     }
 
     public function hotels()
     {
-        return $this->hasMany(HotelModel::class, 'location_id', 'location_id');
+        return $this->hasMany(HotelModel::class, 'location_id');
     }
 
     protected function imageUrl(): Attribute

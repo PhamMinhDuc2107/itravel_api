@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('excerpt')->nullable(); 
             $table->longText('content'); 
             $table->string('image')->nullable(); 
-            $table->unsignedBigInteger('blog_category_id')->nullable()->index(); 
+            $table->unsignedBigInteger('category_id')->nullable()->index(); 
             $table->foreignId('author_id')
                 ->index()
                 ->constrained('admins') 
@@ -39,8 +39,8 @@ return new class extends Migration
         });
 
         Schema::table('blogs', function (Blueprint $table) {
-            $table->foreign('blog_category_id')
-                ->references('blog_category_id')
+            $table->foreign('category_id')
+                ->references('id')
                 ->on('blog_categories')
                 ->nullOnDelete();
         });

@@ -63,17 +63,17 @@ return new class extends Migration
 
         Schema::table('tours', function (Blueprint $table) {
             $table->foreign('category_id')
-                ->references('category_id')
+                ->references('id')
                 ->on('categories')
                 ->nullOnDelete();
             
             $table->foreign('departure_location_id')
-                ->references('location_id')
+                ->references('id')
                 ->on('locations')
                 ->cascadeOnDelete();
             
             $table->foreign('destination_location_id')
-                ->references('location_id')
+                ->references('id')
                 ->on('locations')
                 ->cascadeOnDelete();
         });

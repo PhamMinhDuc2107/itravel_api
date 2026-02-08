@@ -45,7 +45,7 @@ readonly class BlogController
      * 
      * @urlParam id int required Blog ID. Example: 1
      * 
-     * @response 200 {"id": 1, "name": "Blog Title", "slug": "blog-title", "excerpt": "...", "content": "...", "image": "http://...", "blog_category_id": 1, "author_id": 1, "status": "published", "is_featured": 0, "view_count": 0, "published_at": "2024-01-01 00:00:00", "meta_title": "...", "meta_description": "...", "meta_keywords": "...", "created_at": "2024-01-01 00:00:00", "updated_at": "2024-01-01 00:00:00"}
+     * @response 200 {"id": 1, "name": "Blog Title", "slug": "blog-title", "excerpt": "...", "content": "...", "image": "http://...", "category_id": 1, "author_id": 1, "status": "published", "is_featured": 0, "view_count": 0, "published_at": "2024-01-01 00:00:00", "meta_title": "...", "meta_description": "...", "meta_keywords": "...", "created_at": "2024-01-01 00:00:00", "updated_at": "2024-01-01 00:00:00"}
      * @response 404 {"message": "The requested Blog with ID [1] was not found."}
      * 
      * @throws NotFoundException
@@ -63,7 +63,7 @@ readonly class BlogController
      * @bodyParam excerpt string nullable Blog excerpt.
      * @bodyParam content string required Blog content.
      * @bodyParam image file nullable Blog featured image
-     * @bodyParam blog_category_id int nullable Blog category ID. Example: 1
+     * @bodyParam category_id int nullable Blog category ID. Example: 1
      * @bodyParam author_id int required Author (admin) ID. Example: 1
      * @bodyParam status string required Status (draft/published/archived). Example: "published"
      * @bodyParam is_featured int nullable Is featured (0 or 1). Example: 0
@@ -90,7 +90,7 @@ readonly class BlogController
      * @bodyParam excerpt string nullable Blog excerpt.
      * @bodyParam content string required Blog content.
      * @bodyParam image file nullable Blog featured image
-     * @bodyParam blog_category_id int nullable Blog category ID. Example: 1
+     * @bodyParam category_id int nullable Blog category ID. Example: 1
      * @bodyParam author_id int required Author ID. Example: 1
      * @bodyParam status string required Status (draft/published/archived). Example: "published"
      * @bodyParam is_featured int nullable Is featured (0 or 1). Example: 0
@@ -99,7 +99,7 @@ readonly class BlogController
      * @bodyParam meta_description string nullable Meta description (max 500).
      * @bodyParam meta_keywords string nullable Meta keywords (max 255).
      * 
-     * @response 200 {"id": 1, "name": "Blog Title", "slug": "blog-title", "excerpt": "...", "content": "...", "image": "http://...", "blog_category_id": 1, "author_id": 1, "status": "published", "is_featured": 0, "view_count": 0, "published_at": "2024-01-01 00:00:00", "meta_title": "...", "meta_description": "...", "meta_keywords": "...", "created_at": "2024-01-01 00:00:00", "updated_at": "2024-01-01 00:00:00"}
+     * @response 200 {"id": 1, "name": "Blog Title", "slug": "blog-title", "excerpt": "...", "content": "...", "image": "http://...", "category_id": 1, "author_id": 1, "status": "published", "is_featured": 0, "view_count": 0, "published_at": "2024-01-01 00:00:00", "meta_title": "...", "meta_description": "...", "meta_keywords": "...", "created_at": "2024-01-01 00:00:00", "updated_at": "2024-01-01 00:00:00"}
      * @response 404 {"message": "The requested Blog with ID [1] was not found."}
      * @response 422 {"message": "Validation error", "errors": {...}}
      * 

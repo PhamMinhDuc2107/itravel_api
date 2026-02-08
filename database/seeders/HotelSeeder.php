@@ -12,7 +12,7 @@ class HotelSeeder extends Seeder
     public function run(): void
     {
         $hotelTypeIds = DB::table('hotel_types')->pluck('id')->toArray();
-        $locationIds = DB::table('locations')->pluck('location_id')->toArray();
+        $locationIds = DB::table('locations')->pluck('id')->toArray();
 
         if (empty($hotelTypeIds) || empty($locationIds)) {
             $this->command->warn('Hotel Types or Locations not found. Please run HotelTypeSeeder and LocationSeeder first.');

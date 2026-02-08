@@ -49,7 +49,7 @@ readonly class LocationController
      * 
      * @urlParam id int required Location ID. Example: 1
      * 
-     * @response 200 {"id": 1, "name": "Ha Noi", "slug": "ha-noi", "parent_location_id": null, "description": "...", "content": "...", "image": "http://...", "type": "province", "display_home": 0, "is_feature": 0, "is_departure": 0, "is_destination": 1, "position": 0, "status": "active", "meta_title": "...", "meta_description": "...", "meta_keywords": "...", "created_at": "2024-01-01 00:00:00", "updated_at": "2024-01-01 00:00:00"}
+     * @response 200 {"id": 1, "name": "Ha Noi", "slug": "ha-noi", "parent_id": null, "description": "...", "content": "...", "image": "http://...", "type": "province", "display_home": 0, "is_feature": 0, "is_departure": 0, "is_destination": 1, "position": 0, "status": "active", "meta_title": "...", "meta_description": "...", "meta_keywords": "...", "created_at": "2024-01-01 00:00:00", "updated_at": "2024-01-01 00:00:00"}
      * @response 404 {"message": "The requested Location with ID [1] was not found."}
      * 
      * @throws NotFoundException
@@ -66,7 +66,7 @@ readonly class LocationController
      * 
      * @bodyParam name string required Location name. Example: "Ha Noi"
      * @bodyParam slug string required Unique slug. Example: "ha-noi"
-     * @bodyParam parent_location_id int nullable Parent location ID. Example: null
+     * @bodyParam parent_id int nullable Parent location ID. Example: null
      * @bodyParam description string nullable Location description.
      * @bodyParam content string nullable Location content.
      * @bodyParam image file nullable Location image
@@ -98,7 +98,7 @@ readonly class LocationController
      * @urlParam id int required Location ID. Example: 1
      * @bodyParam name string required Location name. Example: "Ha Noi"
      * @bodyParam slug string required Unique slug. Example: "ha-noi"
-     * @bodyParam parent_location_id int nullable Parent location ID (cannot be itself). Example: null
+     * @bodyParam parent_id int nullable Parent location ID (cannot be itself). Example: null
      * @bodyParam description string nullable Location description.
      * @bodyParam content string nullable Location content.
      * @bodyParam image file nullable Location image
@@ -113,7 +113,7 @@ readonly class LocationController
      * @bodyParam meta_description string nullable Meta description (max 500).
      * @bodyParam meta_keywords string nullable Meta keywords (max 255).
      * 
-     * @response 200 {"id": 1, "name": "Ha Noi", "slug": "ha-noi", "parent_location_id": null, "description": "...", "content": "...", "image": "http://...", "type": "province", "display_home": 0, "is_feature": 0, "is_departure": 0, "is_destination": 1, "position": 0, "status": "active", "meta_title": "...", "meta_description": "...", "meta_keywords": "...", "created_at": "2024-01-01 00:00:00", "updated_at": "2024-01-01 00:00:00"}
+     * @response 200 {"id": 1, "name": "Ha Noi", "slug": "ha-noi", "parent_id": null, "description": "...", "content": "...", "image": "http://...", "type": "province", "display_home": 0, "is_feature": 0, "is_departure": 0, "is_destination": 1, "position": 0, "status": "active", "meta_title": "...", "meta_description": "...", "meta_keywords": "...", "created_at": "2024-01-01 00:00:00", "updated_at": "2024-01-01 00:00:00"}
      * @response 404 {"message": "The requested Location with ID [1] was not found."}
      * @response 422 {"message": "Validation error", "errors": {...}}
      * 

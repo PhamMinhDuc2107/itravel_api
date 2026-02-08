@@ -16,7 +16,7 @@ class BlogResource extends BaseResource
             'excerpt' => $this->excerpt,
             'content' => $this->content,
             'image' => $this->image_url,
-            'blog_category_id' => $this->blog_category_id,
+            'category_id' => $this->category_id,
             'category' => $this->whenLoaded('category', function () {
                 return new BlogCategoryResource($this->category);
             }),
@@ -37,6 +37,7 @@ class BlogResource extends BaseResource
             'meta_keywords' => $this->meta_keywords,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+            'deleted_at' => $this->deleted_at?->format('Y-m-d H:i:s'),
         ];
     }
 }
