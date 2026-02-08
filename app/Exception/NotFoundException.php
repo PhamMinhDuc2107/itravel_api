@@ -26,8 +26,7 @@ class NotFoundException extends BusinessException
 
 
         parent::__construct(
-            errorEnum: AppErrorEnum::NOT_FOUND,
-            customMessage: $message
+            $message
         );
     }
 }

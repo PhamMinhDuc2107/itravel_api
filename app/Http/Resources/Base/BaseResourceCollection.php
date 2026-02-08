@@ -5,7 +5,7 @@ namespace App\Http\Resources\Base;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-abstract class BaseResource extends ResourceCollection
+abstract class BaseResourceCollection extends ResourceCollection
 {
     public function toArray(Request $request): array
     {
@@ -18,7 +18,7 @@ abstract class BaseResource extends ResourceCollection
             'meta' => [
                 /**
                  * Format the instane as ISO8601
-                 * 
+                 *
                  * @var string
                  * @example "2025-07-16T19:09:11+09:00"
                  */
@@ -26,7 +26,7 @@ abstract class BaseResource extends ResourceCollection
 
                 /**
                  * Application version
-                 * 
+                 *
                  * @var string
                  * @example "1.0.0"
                  */

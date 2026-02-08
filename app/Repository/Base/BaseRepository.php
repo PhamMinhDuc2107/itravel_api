@@ -2,11 +2,15 @@
 
 namespace App\Repository\Base;
 
+use App\Support\Query\Paginator;
+use App\Support\Query\QueryCriteria;
+use App\Support\Query\QueryWrapper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Container\Container as App;
+use App\Context\QueryContext;
 
 /**
  * @template T of Model
@@ -390,5 +394,39 @@ abstract class BaseRepository implements RepositoryInterface
         $this->orderByColumn = $column;
         $this->orderByDirection = $direction;
         return $this;
+    }
+
+    public function applyCriteria(Builder $query, QueryContext $context, array $searchFields = []): Builder
+    {
+        return QueryCriteria::apply($query, $context, $searchFields);
+    }
+
+    public function applySearch(Builder $query, QueryContext $context, array $searchFields = []): Builder
+    {
+        return QueryCriteria::applySearch($query, $context, $searchFields);
+    }
+
+    public function applySort(Builder $query, QueryContext $context): Builder
+    {
+        return QueryCriteria::applySort($query, $context);
+    }
+
+
+    public function applyOnlyPagi(Builder $query, QueryContext $context): LengthAwarePaginator
+    {
+        return Paginator::paginate($query, $context);
+    }
+
+    public function applyFilters(Builder $query, QueryContext $context, array $searchFields = []): LengthAwarePaginator
+    {
+        return QueryWrapper::handle($query, $context, $searchFields);
+    }
+
+
+    public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
+    {
+        $query = $this->newQuery();
+
+        return $this->applyFilters($query, $context, $searchFields);
     }
 }

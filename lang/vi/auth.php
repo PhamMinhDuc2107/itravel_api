@@ -7,4 +7,5 @@ return [
     'token_missing'   => 'Thiếu token xác thực.',
     'token_invalid'   => 'Token không hợp lệ hoặc đã hết hạn.',
     'user_not_found'  => 'Không tìm thấy người dùng.',
+    'token_revoked' => 'Phiên đăng nhập đã hết hiệu lực. Vui lòng đăng nhập lại.',
 ];

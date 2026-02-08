@@ -1,0 +1,39 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('bank_accounts', function (Blueprint $table) {
+            $table->id();
+            
+            $table->string('bank_name');
+            $table->string('account_number');
+            $table->string('account_holder');
+            $table->string('branch')->nullable();
+            
+            $table->string('logo')->nullable();
+            $table->string('qr_code')->nullable();
+            
+            $table->integer('position')->default(0);
+            $table->tinyInteger('status')->default(1)->index();
+            
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('bank_accounts');
+    }
+};

@@ -39,7 +39,7 @@ class ApiExceptionHandler
     {
         return self::jsonResponse(
             $e->getCode() ?: 400,
-            $e->getErrorEnum(),
+            AppErrorEnum::NOT_FOUND,
             $e->getMessage()
         );
     }

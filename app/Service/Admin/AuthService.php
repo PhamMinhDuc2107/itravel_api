@@ -5,6 +5,7 @@ namespace App\Service\Admin;
 use App\Enum\ActiveStateEnum;
 use App\Enum\AppErrorEnum;
 use App\Enum\AuthUserTypeEnum;
+use App\Enum\RedisKeyEnum;
 use App\Exception\BusinessException;
 use App\Model\AdminModel;
 use App\Repository\Contract\AdminRepositoryInterface;
@@ -13,28 +14,19 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-class AuthService
+readonly class AuthService
 {
     public function __construct(
-        private readonly AdminRepositoryInterface $adminRepository,
-        private readonly JwtSupport $jwt
+        private AdminRepositoryInterface $adminRepository,
+        private JwtSupport               $jwt
     ) {}
-
 
     public function login(string $email, string $password): array
     {
         $admin = $this->adminRepository->getAdminByEmail($email);
 
-        if (! $admin) {
-            throw new AuthenticationException(
-                __('auth.invalid_credentials'),
-            );
-        }
-
-        if (! Hash::check($password, $admin->password)) {
-            throw new AuthenticationException(
-                __('auth.invalid_credentials'),
-            );
+        if (! $admin || ! Hash::check($password, $admin->password)) {
+            throw new AuthenticationException(__('auth.invalid_credentials'));
         }
 
         if ($admin->status !== ActiveStateEnum::Active) {
@@ -43,11 +35,13 @@ class AuthService
                 AppErrorEnum::UNAUTHORIZED->value
             );
         }
-
-        $accessToken = $this->jwt->encode([
+        $payload = [
             'sub'       => $admin->id,
             'auth_type' => AuthUserTypeEnum::ADMIN->value,
-        ]);
+        ];
+
+        $accessToken = $this->jwt->encode($payload);
+
 
         $plainRefreshToken = $this->createRefreshToken($admin);
 
@@ -58,16 +52,11 @@ class AuthService
             'expires_in'    => config('jwt.ttl'),
         ];
     }
-    public function logout(AdminModel $admin): void
+    public function logout(AdminModel $admin, array $payload): void
     {
         $admin->refreshTokens()->delete();
-
     }
 
-    public function resetPassword(): void
-    {
-
-    }
     private function createRefreshToken(AdminModel $admin): string
     {
         $plainRefreshToken = Str::random(64);

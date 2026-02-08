@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Routes\RouteRegistry;
 
-Route::prefix('admin')
-    ->middleware(['api'])
-    ->group(base_path('routes/admin.php'));
+RouteRegistry::api();

@@ -2,6 +2,7 @@
 
 namespace App\Repository\Base;
 
+use App\Context\QueryContext;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
@@ -111,4 +112,11 @@ interface RepositoryInterface
      * Reset model instance
      */
     public function resetModel(): void;
+
+    public function applyFilters(Builder $query, QueryContext $context, array $searchFields = []): LengthAwarePaginator;
+    public function applyOnlyPagi(Builder $query, QueryContext $context): LengthAwarePaginator;
+    public function applySort(Builder $query, QueryContext $context): Builder;
+    public function applySearch(Builder $query, QueryContext $context, array $searchFields = []): Builder;
+    public function applyCriteria(Builder $query, QueryContext $context, array $searchFields = []): Builder;
+    public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator;
 }

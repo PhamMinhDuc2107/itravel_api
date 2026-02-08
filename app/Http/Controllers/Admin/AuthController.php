@@ -20,12 +20,16 @@ class AuthController extends Controller
         $validated = $request->validated();
         $email = $validated['email'];
         $password = $validated['password'];
+
         return new LoginResource($this->authService->login($email, $password));
     }
 
     public function logout(Request $request): SuccessResponse
     {
-        $this->authService->logout($request->user());
+        $payload = $request->attributes->get('payload') ?? [];
+
+        $this->authService->logout($request->user(), $payload);
+
         return (new SuccessResponse("Logout successfully"));
     }
 }

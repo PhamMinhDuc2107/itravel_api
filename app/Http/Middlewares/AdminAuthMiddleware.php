@@ -2,18 +2,17 @@
 
 namespace App\Http\Middlewares;
 
-use App\Model\AdminModel;
 use App\Repository\Contract\AdminRepositoryInterface;
 use App\Support\Jwt\JwtSupport;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 
-class AdminAuthMiddleware
+readonly class AdminAuthMiddleware
 {
     public function __construct(
-        private readonly JwtSupport $jwt,
-        private readonly AdminRepositoryInterface $adminRepository,
+        private JwtSupport               $jwt,
+        private AdminRepositoryInterface $adminRepository,
     ) {}
 
     public function handle(Request $request, Closure $next)
@@ -26,13 +25,7 @@ class AdminAuthMiddleware
             );
         }
 
-        try {
-            $payload = $this->jwt->decode($token);
-        } catch (\Throwable $e) {
-            throw new AuthenticationException(
-                __('auth.token_invalid')
-            );
-        }
+        $payload = $this->jwt->decode($token);
 
         $admin = $this->adminRepository->find($payload['sub'] ?? null);
 
@@ -43,7 +36,7 @@ class AdminAuthMiddleware
         }
 
         auth()->setUser($admin);
-
+        $request->attributes->set('payload', $payload);
         return $next($request);
     }
 }
