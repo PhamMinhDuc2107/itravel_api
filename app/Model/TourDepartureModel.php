@@ -5,6 +5,7 @@ namespace App\Model;
 use App\Enum\TourDepartureStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TourDepartureModel extends Model
 {
@@ -41,7 +42,7 @@ class TourDepartureModel extends Model
         'booked' => 'integer',
     ];
 
-    public function tour()
+    public function tour(): BelongsTo
     {
         return $this->belongsTo(TourModel::class, 'tour_id');
     }

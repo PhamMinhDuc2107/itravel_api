@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\SupportTeamController;
 use App\Http\Controllers\Admin\BankAccountController;
 use App\Http\Controllers\Admin\ConsultationController;
+use App\Http\Controllers\Admin\TourController;
 use Illuminate\Support\Facades\Route;
 
 // AUTH
@@ -92,6 +93,14 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::get('/{id}', [ConsultationController::class, 'show'])->name('admin.consultations.show');
         Route::put('/{id}', [ConsultationController::class, 'update'])->name('admin.consultations.update');
         Route::delete('/{id}', [ConsultationController::class, 'destroy'])->name('admin.consultations.destroy');
+    });
+    // TOURS
+    Route::prefix('tours')->group(function () {
+        Route::get('/', [TourController::class, 'index'])->name('admin.tours.index');
+        Route::post('/', [TourController::class, 'store'])->name('admin.tours.store');
+        Route::get('/{id}', [TourController::class, 'show'])->name('admin.tours.show');
+        Route::put('/{id}', [TourController::class, 'update'])->name('admin.tours.update');
+        Route::delete('/{id}', [TourController::class, 'destroy'])->name('admin.tours.destroy');
     });
 
 });

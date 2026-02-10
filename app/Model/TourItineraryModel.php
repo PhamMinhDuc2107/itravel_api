@@ -5,6 +5,7 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TourItineraryModel extends Model
 {
@@ -28,7 +29,7 @@ class TourItineraryModel extends Model
         'position' => 'integer',
     ];
 
-    public function tour()
+    public function tour(): BelongsTo
     {
         return $this->belongsTo(TourModel::class, 'tour_id');
     }

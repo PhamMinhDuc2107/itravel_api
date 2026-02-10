@@ -11,6 +11,7 @@ use App\Repository\Contract\BlogRepositoryInterface;
 use App\Repository\Contract\SupportTeamRepositoryInterface;
 use App\Repository\Contract\BankAccountRepositoryInterface;
 use App\Repository\Contract\ConsultationRepositoryInterface;
+use App\Repository\Contract\TourRepositoryInterface;
 use App\Repository\Eloquent\AdminRepository;
 use App\Repository\Eloquent\CategoryRepository;
 use App\Repository\Eloquent\BannerRepository;
@@ -20,6 +21,7 @@ use App\Repository\Eloquent\BlogRepository;
 use App\Repository\Eloquent\SupportTeamRepository;
 use App\Repository\Eloquent\BankAccountRepository;
 use App\Repository\Eloquent\ConsultationRepository;
+use App\Repository\Eloquent\TourRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -38,6 +40,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SupportTeamRepositoryInterface::class, SupportTeamRepository::class);
         $this->app->bind(BankAccountRepositoryInterface::class, BankAccountRepository::class);
         $this->app->bind(ConsultationRepositoryInterface::class, ConsultationRepository::class);
+        $this->app->bind(TourRepositoryInterface::class, TourRepository::class);
     }
 
     /**

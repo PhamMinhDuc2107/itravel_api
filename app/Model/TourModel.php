@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class TourModel extends Model
 {
@@ -60,37 +63,37 @@ class TourModel extends Model
         'status' => TourStatusEnum::class,
     ];
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(CategoryModel::class, 'category_id');
     }
 
-    public function departureLocation()
+    public function departureLocation(): BelongsTo
     {
         return $this->belongsTo(LocationModel::class, 'departure_location_id');
     }
 
-    public function destinationLocation()
+    public function destinationLocation(): BelongsTo
     {
         return $this->belongsTo(LocationModel::class, 'destination_location_id');
     }
 
-    public function departures()
+    public function departures(): HasMany
     {
         return $this->hasMany(TourDepartureModel::class, 'tour_id');
     }
 
-    public function itineraries()
+    public function itineraries(): HasMany
     {
         return $this->hasMany(TourItineraryModel::class, 'tour_id');
     }
 
-    public function bookingItems()
+    public function bookingItems(): MorphMany
     {
         return $this->morphMany(BookingItemModel::class, 'productable');
     }
 
-    public function consultations()
+    public function consultations(): MorphMany
     {
         return $this->morphMany(ConsultationModel::class, 'productable');
     }
