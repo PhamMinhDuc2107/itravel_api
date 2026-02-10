@@ -11,6 +11,10 @@ use App\Http\Controllers\Admin\SupportTeamController;
 use App\Http\Controllers\Admin\BankAccountController;
 use App\Http\Controllers\Admin\ConsultationController;
 use App\Http\Controllers\Admin\TourController;
+use App\Http\Controllers\Admin\AmenityController;
+use App\Http\Controllers\Admin\HotelController;
+use App\Http\Controllers\Admin\HotelReviewController;
+use App\Http\Controllers\Admin\BookingController;
 use Illuminate\Support\Facades\Route;
 
 // AUTH
@@ -101,6 +105,38 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::get('/{id}', [TourController::class, 'show'])->name('admin.tours.show');
         Route::put('/{id}', [TourController::class, 'update'])->name('admin.tours.update');
         Route::delete('/{id}', [TourController::class, 'destroy'])->name('admin.tours.destroy');
+    });
+    // AMENITIES
+    Route::prefix('amenities')->group(function () {
+        Route::get('/', [AmenityController::class, 'index'])->name('admin.amenities.index');
+        Route::post('/', [AmenityController::class, 'store'])->name('admin.amenities.store');
+        Route::get('/{id}', [AmenityController::class, 'show'])->name('admin.amenities.show');
+        Route::put('/{id}', [AmenityController::class, 'update'])->name('admin.amenities.update');
+        Route::delete('/{id}', [AmenityController::class, 'destroy'])->name('admin.amenities.destroy');
+    });
+    // HOTELS
+    Route::prefix('hotels')->group(function () {
+        Route::get('/', [HotelController::class, 'index'])->name('admin.hotels.index');
+        Route::post('/', [HotelController::class, 'store'])->name('admin.hotels.store');
+        Route::get('/{id}', [HotelController::class, 'show'])->name('admin.hotels.show');
+        Route::put('/{id}', [HotelController::class, 'update'])->name('admin.hotels.update');
+        Route::delete('/{id}', [HotelController::class, 'destroy'])->name('admin.hotels.destroy');
+    });
+    // HOTEL REVIEWS
+    Route::prefix('hotel-reviews')->group(function () {
+        Route::get('/', [HotelReviewController::class, 'index'])->name('admin.hotel-reviews.index');
+        Route::post('/', [HotelReviewController::class, 'store'])->name('admin.hotel-reviews.store');
+        Route::get('/{id}', [HotelReviewController::class, 'show'])->name('admin.hotel-reviews.show');
+        Route::put('/{id}', [HotelReviewController::class, 'update'])->name('admin.hotel-reviews.update');
+        Route::delete('/{id}', [HotelReviewController::class, 'destroy'])->name('admin.hotel-reviews.destroy');
+    });
+    // BOOKINGS
+    Route::prefix('bookings')->group(function () {
+        Route::get('/', [BookingController::class, 'index'])->name('admin.bookings.index');
+        Route::post('/', [BookingController::class, 'store'])->name('admin.bookings.store');
+        Route::get('/{id}', [BookingController::class, 'show'])->name('admin.bookings.show');
+        Route::put('/{id}', [BookingController::class, 'update'])->name('admin.bookings.update');
+        Route::delete('/{id}', [BookingController::class, 'destroy'])->name('admin.bookings.destroy');
     });
 
 });

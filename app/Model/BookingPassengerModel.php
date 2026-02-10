@@ -5,6 +5,7 @@ namespace App\Model;
 use App\Enum\PassengerTypeEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BookingPassengerModel extends Model
 {
@@ -33,7 +34,7 @@ class BookingPassengerModel extends Model
         'type' => PassengerTypeEnum::class,
     ];
 
-    public function bookingItem()
+    public function bookingItem(): BelongsTo
     {
         return $this->belongsTo(BookingItemModel::class, 'booking_item_id');
     }

@@ -4,6 +4,8 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class BookingItemModel extends Model
@@ -39,7 +41,7 @@ class BookingItemModel extends Model
         'options' => 'array',
     ];
 
-    public function booking()
+    public function booking(): BelongsTo
     {
         return $this->belongsTo(BookingModel::class, 'booking_id');
     }
@@ -49,7 +51,7 @@ class BookingItemModel extends Model
         return $this->morphTo();
     }
 
-    public function passengers()
+    public function passengers(): HasMany
     {
         return $this->hasMany(BookingPassengerModel::class, 'booking_item_id');
     }

@@ -7,6 +7,7 @@ use App\Support\File\FileSanitizer;
 use App\Support\File\ImageOptimizer;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -91,11 +92,35 @@ class DiskManager
         return Storage::disk($this->disk)->exists($path) && Storage::disk($this->disk)->delete($path);
     }
 
+    /**
+     * Delete many files safely.
+     *
+     * @param array<int, string|null> $paths
+     */
+    public function deleteMany(array $paths): void
+    {
+        foreach ($paths as $path) {
+            if (! $this->isExists($path)) {
+                Log::error('File not found: ' . $path);
+                continue;
+            }
+
+            $this->delete($path);
+        }
+    }
+
     public function url(?string $path): ?string
     {
         if (!$path) return null;
         if (Str::startsWith($path, ['http://', 'https://'])) return $path;
 
         return Storage::disk($this->disk)->url($path);
+    }
+
+    public function isExists(?string $path): bool
+    {
+        if (!$path) return false;
+
+        return Storage::disk($this->disk)->exists($path);
     }
 }

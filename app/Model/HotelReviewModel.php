@@ -5,6 +5,7 @@ namespace App\Model;
 use App\Enum\ActiveStateEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class HotelReviewModel extends Model
 {
@@ -32,12 +33,12 @@ class HotelReviewModel extends Model
         'status' => ActiveStateEnum::class,
     ];
 
-    public function hotel()
+    public function hotel(): BelongsTo
     {
         return $this->belongsTo(HotelModel::class, 'hotel_id');
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }

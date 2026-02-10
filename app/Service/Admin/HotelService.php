@@ -5,43 +5,56 @@ namespace App\Service\Admin;
 use App\Constant\UploadConstant;
 use App\Context\QueryContext;
 use App\Exception\NotFoundException;
-use App\Repository\Contract\TourRepositoryInterface;
+use App\Repository\Contract\HotelRepositoryInterface;
 use App\Support\File\DiskManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
-readonly class TourService
+readonly class HotelService
 {
     public function __construct(
-        private TourRepositoryInterface $tourRepository,
+        private HotelRepositoryInterface $hotelRepository,
         private DiskManager $diskManager,
     ) {}
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
-        return $this->tourRepository->list($context, $searchFields);
+        return $this->hotelRepository->list($context, $searchFields);
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function show(int $id): Model
     {
-        $tour = $this->tourRepository->find($id, ['category', 'departureLocation', 'destinationLocation']);
+        $hotel = $this->hotelRepository->find($id, ['location', 'hotelType', 'amenities', 'reviews']);
 
-        if (! $tour) {
-            throw new NotFoundException('Tour', $id);
+        if (! $hotel) {
+            throw new NotFoundException('Hotel', $id);
         }
 
-        return $tour;
+        return $hotel;
     }
 
     public function store(array $data): Model
     {
         return DB::transaction(function () use ($data) {
+            $amenityIds = $data['amenity_ids'] ?? null;
+            unset($data['amenity_ids']);
+
             [$dataWithFiles, $newFiles] = $this->prepareImages($data);
 
             try {
-                return $this->tourRepository->create($dataWithFiles);
+                /** @var Model $hotel */
+                $hotel = $this->hotelRepository->create($dataWithFiles);
+
+                if (is_array($amenityIds)) {
+                    $hotel->amenities()->sync($amenityIds);
+                }
+
+                return $hotel;
             } catch (\Throwable $e) {
                 $this->diskManager->deleteMany($newFiles);
                 throw $e;
@@ -49,28 +62,37 @@ readonly class TourService
         });
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function update(int $id, array $data): Model
     {
-        $tour = $this->tourRepository->find($id);
+        $hotel = $this->hotelRepository->find($id);
 
-        if (! $tour) {
-            throw new NotFoundException('Tour', $id);
+        if (! $hotel) {
+            throw new NotFoundException('Hotel', $id);
         }
 
-        return DB::transaction(function () use ($id, $data, $tour) {
-            $oldImage = $tour->image;
-            $oldGallery = is_array($tour->gallery) ? $tour->gallery : [];
+        return DB::transaction(function () use ($id, $data, $hotel) {
+            $amenityIds = $data['amenity_ids'] ?? null;
+            unset($data['amenity_ids']);
+
+            $oldImage = $hotel->image;
+            $oldGallery = is_array($hotel->gallery) ? $hotel->gallery : [];
 
             [$dataWithFiles, $newFiles] = $this->prepareImages($data);
 
             try {
-                /** @var Model $updated */
-                $updated = $this->tourRepository->update($id, $dataWithFiles);
+                /** @var Model $updatedHotel */
+                $updatedHotel = $this->hotelRepository->update($id, $dataWithFiles);
 
-                // Sau khi update thành công mới xoá file cũ
+                if (is_array($amenityIds)) {
+                    $hotel->amenities()->sync($amenityIds);
+                }
+
                 $this->diskManager->deleteMany([$oldImage, ...$oldGallery]);
 
-                return $updated;
+                return $updatedHotel;
             } catch (\Throwable $e) {
                 $this->diskManager->deleteMany($newFiles);
                 throw $e;
@@ -78,24 +100,29 @@ readonly class TourService
         });
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function destroy(int $id): bool
     {
-        $tour = $this->tourRepository->find($id);
+        $hotel = $this->hotelRepository->find($id);
 
-        if (! $tour) {
-            throw new NotFoundException('Tour', $id);
+        if (! $hotel) {
+            throw new NotFoundException('Hotel', $id);
         }
 
-        return DB::transaction(function () use ($id, $tour) {
-            $deleted = $this->tourRepository->delete($id);
+        return DB::transaction(function () use ($id, $hotel) {
+            $hotel->amenities()->detach();
+
+            $deleted = $this->hotelRepository->delete($id);
 
             if ($deleted) {
                 $files = [];
-                if ($tour->image) {
-                    $files[] = $tour->image;
+                if ($hotel->image) {
+                    $files[] = $hotel->image;
                 }
-                if (is_array($tour->gallery)) {
-                    $files = array_merge($files, $tour->gallery);
+                if (is_array($hotel->gallery)) {
+                    $files = array_merge($files, $hotel->gallery);
                 }
 
                 $this->diskManager->deleteMany($files);
@@ -106,8 +133,6 @@ readonly class TourService
     }
 
     /**
-     * Upload image(s) for main image and gallery.
-     *
      * @return array{0: array, 1: string[]} [dataWithFiles, uploadedFiles]
      */
     private function prepareImages(array $data): array
@@ -139,9 +164,7 @@ readonly class TourService
 
     private function uploadImage(UploadedFile $file): string
     {
-        $module = UploadConstant::TOUR_MODULE;
-
-        return $this->diskManager->upload($file, $module);
+        return $this->diskManager->upload($file, UploadConstant::HOTEL_MODULE);
     }
 }
 

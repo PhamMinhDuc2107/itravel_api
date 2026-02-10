@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Tour;
 
+use App\Constant\UploadConstant;
 use App\Enum\TourStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -41,8 +42,18 @@ class StoreRequest extends FormRequest
             'included' => ['nullable', 'string'],
             'excluded' => ['nullable', 'string'],
 
-            'image' => ['nullable', 'string', 'max:255'],
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:' . UploadConstant::getImageMimesString(),
+                'max:' . UploadConstant::IMAGE_MAX_SIZE,
+            ],
             'gallery' => ['nullable', 'array'],
+            'gallery.*' => [
+                'image',
+                'mimes:' . UploadConstant::getImageMimesString(),
+                'max:' . UploadConstant::IMAGE_MAX_SIZE,
+            ],
 
             'view_count' => ['nullable', 'integer', 'min:0'],
             'position' => ['nullable', 'integer', 'min:0'],
@@ -61,28 +72,14 @@ class StoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'code.required' => 'Code is required',
-            'code.unique' => 'Code already exists',
             'name.required' => __('validation.custom.name.required'),
             'name.max' => __('validation.custom.name.max'),
-            'slug.required' => 'Slug is required',
-            'slug.unique' => 'Slug already exists',
-
-            'category_id.exists' => 'Category does not exist',
-            'departure_location_id.required' => 'Departure location is required',
-            'departure_location_id.exists' => 'Departure location does not exist',
-            'destination_location_id.required' => 'Destination location is required',
-            'destination_location_id.exists' => 'Destination location does not exist',
-            'destination_location_id.different' => 'Destination location must be different from departure location',
-
-            'duration_days.required' => 'Duration days is required',
-            'duration_days.min' => 'Duration days must be at least 1',
-
-            'price_adult.required' => 'Adult price is required',
-            'price_adult.min' => 'Adult price must be greater than or equal to 0',
-
-            'status.required' => 'Status is required',
-            'status.enum' => 'Invalid tour status',
+            'image.image' => __('validation.custom.avatar.image'),
+            'image.mimes' => __('validation.custom.avatar.mimes'),
+            'image.max' => __('validation.custom.avatar.max'),
+            'gallery.*.image' => __('validation.custom.avatar.image'),
+            'gallery.*.mimes' => __('validation.custom.avatar.mimes'),
+            'gallery.*.max' => __('validation.custom.avatar.max'),
         ];
     }
 }

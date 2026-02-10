@@ -7,6 +7,8 @@ use App\Enum\PaymentStatusEnum;
 use App\Enum\PaymentMethodEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BookingModel extends Model
@@ -45,14 +47,19 @@ class BookingModel extends Model
         'payment_method' => PaymentMethodEnum::class,
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function items()
+    public function items(): HasMany
     {
         return $this->hasMany(BookingItemModel::class, 'booking_id');
+    }
+
+    public function logs(): HasMany
+    {
+        return $this->hasMany(BookingLogModel::class, 'booking_id');
     }
 }
 

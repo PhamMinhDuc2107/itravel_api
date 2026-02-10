@@ -77,8 +77,8 @@ readonly class TourController
      * @bodyParam policy string nullable Policy content.
      * @bodyParam included string nullable Included services.
      * @bodyParam excluded string nullable Excluded services.
-     * @bodyParam image string nullable Main image path.
-     * @bodyParam gallery array nullable Gallery images.
+     * @bodyParam image file nullable Main image file.
+     * @bodyParam gallery array nullable Gallery image files.
      * @bodyParam view_count int nullable Initial view count. Example: 0
      * @bodyParam position int nullable Position (>=0). Example: 0
      * @bodyParam status int required Status (TourStatusEnum). Example: 1
@@ -117,8 +117,8 @@ readonly class TourController
      * @bodyParam policy string nullable Policy content.
      * @bodyParam included string nullable Included services.
      * @bodyParam excluded string nullable Excluded services.
-     * @bodyParam image string nullable Main image path.
-     * @bodyParam gallery array nullable Gallery images.
+     * @bodyParam image file nullable Main image file.
+     * @bodyParam gallery array nullable Gallery image files.
      * @bodyParam view_count int nullable Initial view count. Example: 0
      * @bodyParam position int nullable Position (>=0). Example: 0
      * @bodyParam status int required Status (TourStatusEnum). Example: 1
