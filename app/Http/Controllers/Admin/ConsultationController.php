@@ -6,6 +6,7 @@ use App\Context\QueryContext;
 use App\Exception\NotFoundException;
 use App\Http\Requests\Admin\Consultation\StoreRequest;
 use App\Http\Requests\Admin\Consultation\UpdateRequest;
+use App\Http\Requests\Admin\BulkDestroyRequest;
 use App\Http\Resources\Admin\Consultation\ConsultationCollectionResource;
 use App\Http\Resources\Admin\Consultation\ConsultationResource;
 use App\Http\Responses\SuccessResponse;
@@ -21,7 +22,8 @@ readonly class ConsultationController
 {
     public function __construct(
         private ConsultationService $consultationService
-    ) {}
+    ) {
+    }
 
     /**
      * Get list of consultations
@@ -116,6 +118,22 @@ readonly class ConsultationController
     {
         $this->consultationService->destroy($id);
         return new SuccessResponse([]);
+    }
+
+    /**
+     * Bulk delete consultations
+     *
+     * Delete multiple consultations at once by providing an array of IDs.
+     *
+     * @bodyParam ids int[] required Array of consultation IDs to delete. Example: [1, 2, 3]
+     *
+     * @response 200 {"message": "Success", "data": {"deleted_count": 3}}
+     * @response 422 {"message": "Validation error", "errors": {"ids": ["The ids field is required."]}}
+     */
+    public function bulkDestroy(BulkDestroyRequest $request): SuccessResponse
+    {
+        $deleted = $this->consultationService->destroyMultiple($request->validated('ids'));
+        return new SuccessResponse(['deleted_count' => $deleted]);
     }
 }
 

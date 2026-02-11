@@ -17,7 +17,8 @@ readonly class HotelService
     public function __construct(
         private HotelRepositoryInterface $hotelRepository,
         private DiskManager $diskManager,
-    ) {}
+    ) {
+    }
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
@@ -31,7 +32,7 @@ readonly class HotelService
     {
         $hotel = $this->hotelRepository->find($id, ['location', 'hotelType', 'amenities', 'reviews']);
 
-        if (! $hotel) {
+        if (!$hotel) {
             throw new NotFoundException('Hotel', $id);
         }
 
@@ -69,7 +70,7 @@ readonly class HotelService
     {
         $hotel = $this->hotelRepository->find($id);
 
-        if (! $hotel) {
+        if (!$hotel) {
             throw new NotFoundException('Hotel', $id);
         }
 
@@ -107,7 +108,7 @@ readonly class HotelService
     {
         $hotel = $this->hotelRepository->find($id);
 
-        if (! $hotel) {
+        if (!$hotel) {
             throw new NotFoundException('Hotel', $id);
         }
 
@@ -125,6 +126,34 @@ readonly class HotelService
                     $files = array_merge($files, $hotel->gallery);
                 }
 
+                $this->diskManager->deleteMany($files);
+            }
+
+            return $deleted;
+        });
+    }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            $hotels = $this->hotelRepository->findAllBy([['id', 'in', $ids]]);
+
+            foreach ($hotels as $hotel) {
+                $hotel->amenities()->detach();
+            }
+
+            $deleted = $this->hotelRepository->deleteMultiple($ids);
+
+            if ($deleted) {
+                $files = [];
+                foreach ($hotels as $hotel) {
+                    if ($hotel->image) {
+                        $files[] = $hotel->image;
+                    }
+                    if (is_array($hotel->gallery)) {
+                        $files = array_merge($files, $hotel->gallery);
+                    }
+                }
                 $this->diskManager->deleteMany($files);
             }
 

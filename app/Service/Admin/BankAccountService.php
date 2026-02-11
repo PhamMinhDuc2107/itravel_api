@@ -17,7 +17,8 @@ readonly class BankAccountService
     public function __construct(
         private BankAccountRepositoryInterface $bankAccountRepository,
         private DiskManager $diskManager,
-    ) {}
+    ) {
+    }
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
@@ -31,7 +32,7 @@ readonly class BankAccountService
     {
         $bankAccount = $this->bankAccountRepository->find($id);
 
-        if (! $bankAccount) {
+        if (!$bankAccount) {
             throw new NotFoundException('Bank Account', $id);
         }
 
@@ -141,6 +142,27 @@ readonly class BankAccountService
                 }
                 if ($bankAccount->qr_code) {
                     $this->diskManager->delete($bankAccount->qr_code);
+                }
+            }
+
+            return $deleted;
+        });
+    }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            $accounts = $this->bankAccountRepository->findAllBy([['id', 'in', $ids]]);
+            $deleted = $this->bankAccountRepository->deleteMultiple($ids);
+
+            if ($deleted) {
+                foreach ($accounts as $account) {
+                    if ($account->logo) {
+                        $this->diskManager->delete($account->logo);
+                    }
+                    if ($account->qr_code) {
+                        $this->diskManager->delete($account->qr_code);
+                    }
                 }
             }
 

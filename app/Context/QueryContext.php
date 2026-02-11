@@ -12,18 +12,33 @@ readonly class QueryContext
         public string  $sort,
         public string  $order,
         public int     $limit,
-        public array   $params
+        public int     $page,
+        public array   $params,
+        public FilterContext $filters
     ) {}
 
-    public static function fromRequest(Request $request): self
+    /**
+     * Create QueryContext from Request
+     *
+     * @param Request $request
+     * @param array $filterableColumns Allowed filterable columns (e.g., ['status', 'payment_status', 'is_featured'])
+     */
+    public static function fromRequest(Request $request, array $filterableColumns = []): self
     {
+        $params = $request->all();
+
+        // Extract filters from request
+        $filters = FilterContext::fromRequest($params, $filterableColumns);
+
         return new self(
-            $request->query('q'),
+            $request->query('q') ?: $request->query('search'),
             $request->query('search_by'),
             $request->query('sort', 'id'),
             $request->query('order', 'desc'),
-            (int) $request->query('limit', 10),
-            $request->all()
+            (int) $request->query('per_page', $request->query('limit', 15)),
+            (int) $request->query('page', 1),
+            $params,
+            $filters
         );
     }
 
@@ -35,6 +50,17 @@ readonly class QueryContext
             'sort' => $this->sort,
             'order' => $this->order,
             'limit' => $this->limit,
+            'page' => $this->page,
+            'filters' => $this->filters->toArray(),
         ]);
     }
+
+    /**
+     * Check if has any filters
+     */
+    public function hasFilters(): bool
+    {
+        return !$this->filters->isEmpty();
+    }
 }
+

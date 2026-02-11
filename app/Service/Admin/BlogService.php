@@ -17,7 +17,8 @@ readonly class BlogService
     public function __construct(
         private BlogRepositoryInterface $blogRepository,
         private DiskManager $diskManager,
-    ) {}
+    ) {
+    }
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
@@ -31,7 +32,7 @@ readonly class BlogService
     {
         $blog = $this->blogRepository->find($id);
 
-        if (! $blog) {
+        if (!$blog) {
             throw new NotFoundException('Blog', $id);
         }
 
@@ -114,6 +115,24 @@ readonly class BlogService
 
             if ($deleted && $blog->image) {
                 $this->diskManager->delete($blog->image);
+            }
+
+            return $deleted;
+        });
+    }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            $blogs = $this->blogRepository->findAllBy([['id', 'in', $ids]]);
+            $deleted = $this->blogRepository->deleteMultiple($ids);
+
+            if ($deleted) {
+                foreach ($blogs as $blog) {
+                    if ($blog->image) {
+                        $this->diskManager->delete($blog->image);
+                    }
+                }
             }
 
             return $deleted;

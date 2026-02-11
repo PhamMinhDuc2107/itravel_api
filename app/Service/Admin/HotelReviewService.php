@@ -13,7 +13,8 @@ readonly class HotelReviewService
 {
     public function __construct(
         private HotelReviewRepositoryInterface $hotelReviewRepository,
-    ) {}
+    ) {
+    }
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
@@ -27,7 +28,7 @@ readonly class HotelReviewService
     {
         $review = $this->hotelReviewRepository->find($id, ['hotel', 'user']);
 
-        if (! $review) {
+        if (!$review) {
             throw new NotFoundException('HotelReview', $id);
         }
 
@@ -36,7 +37,7 @@ readonly class HotelReviewService
 
     public function store(array $data): Model
     {
-        return DB::transaction(fn () => $this->hotelReviewRepository->create($data));
+        return DB::transaction(fn() => $this->hotelReviewRepository->create($data));
     }
 
     /**
@@ -46,11 +47,11 @@ readonly class HotelReviewService
     {
         $review = $this->hotelReviewRepository->find($id);
 
-        if (! $review) {
+        if (!$review) {
             throw new NotFoundException('HotelReview', $id);
         }
 
-        return DB::transaction(fn () => $this->hotelReviewRepository->update($id, $data));
+        return DB::transaction(fn() => $this->hotelReviewRepository->update($id, $data));
     }
 
     /**
@@ -60,11 +61,16 @@ readonly class HotelReviewService
     {
         $review = $this->hotelReviewRepository->find($id);
 
-        if (! $review) {
+        if (!$review) {
             throw new NotFoundException('HotelReview', $id);
         }
 
-        return DB::transaction(fn () => $this->hotelReviewRepository->delete($id));
+        return DB::transaction(fn() => $this->hotelReviewRepository->delete($id));
+    }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(fn() => $this->hotelReviewRepository->deleteMultiple($ids));
     }
 }
 

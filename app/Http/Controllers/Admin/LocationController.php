@@ -6,6 +6,7 @@ use App\Context\QueryContext;
 use App\Exception\NotFoundException;
 use App\Http\Requests\Admin\Location\StoreRequest;
 use App\Http\Requests\Admin\Location\UpdateRequest;
+use App\Http\Requests\Admin\BulkDestroyRequest;
 use App\Http\Resources\Admin\Location\LocationCollectionResource;
 use App\Http\Resources\Admin\Location\LocationResource;
 use App\Http\Responses\SuccessResponse;
@@ -21,7 +22,8 @@ readonly class LocationController
 {
     public function __construct(
         private LocationService $locationService
-    ) {}
+    ) {
+    }
 
     /**
      * Get list of locations
@@ -138,6 +140,22 @@ readonly class LocationController
     {
         $this->locationService->destroy($id);
         return new SuccessResponse([]);
+    }
+
+    /**
+     * Bulk delete locations
+     *
+     * Delete multiple locations at once by providing an array of IDs.
+     *
+     * @bodyParam ids int[] required Array of location IDs to delete. Example: [1, 2, 3]
+     *
+     * @response 200 {"message": "Success", "data": {"deleted_count": 3}}
+     * @response 422 {"message": "Validation error", "errors": {"ids": ["The ids field is required."]}}
+     */
+    public function bulkDestroy(BulkDestroyRequest $request): SuccessResponse
+    {
+        $deleted = $this->locationService->destroyMultiple($request->validated('ids'));
+        return new SuccessResponse(['deleted_count' => $deleted]);
     }
 }
 

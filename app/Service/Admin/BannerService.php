@@ -17,7 +17,8 @@ readonly class BannerService
     public function __construct(
         private BannerRepositoryInterface $bannerRepository,
         private DiskManager $diskManager,
-    ) {}
+    ) {
+    }
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
@@ -31,7 +32,7 @@ readonly class BannerService
     {
         $banner = $this->bannerRepository->find($id);
 
-        if (! $banner) {
+        if (!$banner) {
             throw new NotFoundException('Banner', $id);
         }
 
@@ -141,6 +142,27 @@ readonly class BannerService
                 }
                 if ($banner->mobile_image) {
                     $this->diskManager->delete($banner->mobile_image);
+                }
+            }
+
+            return $deleted;
+        });
+    }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            $banners = $this->bannerRepository->findAllBy([['id', 'in', $ids]]);
+            $deleted = $this->bannerRepository->deleteMultiple($ids);
+
+            if ($deleted) {
+                foreach ($banners as $banner) {
+                    if ($banner->image) {
+                        $this->diskManager->delete($banner->image);
+                    }
+                    if ($banner->mobile_image) {
+                        $this->diskManager->delete($banner->mobile_image);
+                    }
                 }
             }
 

@@ -13,10 +13,21 @@ readonly class CategoryService
 {
     public function __construct(
         private CategoryRepositoryInterface $categoryRepository,
-    ) {}
+    ) {
+    }
 
+    /**
+     * List categories with search and filters
+     *
+     * Searchable fields: name, slug, description
+     * Filterable fields: status, parent_id
+     */
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
+        if (empty($searchFields)) {
+            $searchFields = ['name', 'slug', 'description'];
+        }
+
         return $this->categoryRepository->list($context, $searchFields);
     }
 
@@ -27,7 +38,7 @@ readonly class CategoryService
     {
         $category = $this->categoryRepository->find($id);
 
-        if (! $category) {
+        if (!$category) {
             throw new NotFoundException('Category', $id);
         }
 
@@ -70,6 +81,13 @@ readonly class CategoryService
 
         return DB::transaction(function () use ($id) {
             return $this->categoryRepository->delete($id);
+        });
+    }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            return $this->categoryRepository->deleteMultiple($ids);
         });
     }
 }

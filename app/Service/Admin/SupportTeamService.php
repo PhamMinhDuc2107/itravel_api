@@ -17,7 +17,8 @@ readonly class SupportTeamService
     public function __construct(
         private SupportTeamRepositoryInterface $supportTeamRepository,
         private DiskManager $diskManager,
-    ) {}
+    ) {
+    }
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
@@ -31,7 +32,7 @@ readonly class SupportTeamService
     {
         $supportTeam = $this->supportTeamRepository->find($id);
 
-        if (! $supportTeam) {
+        if (!$supportTeam) {
             throw new NotFoundException('Support Team', $id);
         }
 
@@ -114,6 +115,24 @@ readonly class SupportTeamService
 
             if ($deleted && $supportTeam->avatar) {
                 $this->diskManager->delete($supportTeam->avatar);
+            }
+
+            return $deleted;
+        });
+    }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            $members = $this->supportTeamRepository->findAllBy([['id', 'in', $ids]]);
+            $deleted = $this->supportTeamRepository->deleteMultiple($ids);
+
+            if ($deleted) {
+                foreach ($members as $member) {
+                    if ($member->avatar) {
+                        $this->diskManager->delete($member->avatar);
+                    }
+                }
             }
 
             return $deleted;

@@ -6,6 +6,7 @@ use App\Context\QueryContext;
 use App\Exception\NotFoundException;
 use App\Http\Requests\Admin\Blog\StoreRequest;
 use App\Http\Requests\Admin\Blog\UpdateRequest;
+use App\Http\Requests\Admin\BulkDestroyRequest;
 use App\Http\Resources\Admin\Blog\BlogCollectionResource;
 use App\Http\Resources\Admin\Blog\BlogResource;
 use App\Http\Responses\SuccessResponse;
@@ -21,7 +22,8 @@ readonly class BlogController
 {
     public function __construct(
         private BlogService $blogService
-    ) {}
+    ) {
+    }
 
     /**
      * Get list of blogs
@@ -122,6 +124,22 @@ readonly class BlogController
     {
         $this->blogService->destroy($id);
         return new SuccessResponse([]);
+    }
+
+    /**
+     * Bulk delete blogs
+     *
+     * Delete multiple blogs at once by providing an array of IDs.
+     *
+     * @bodyParam ids int[] required Array of blog IDs to delete. Example: [1, 2, 3]
+     *
+     * @response 200 {"message": "Success", "data": {"deleted_count": 3}}
+     * @response 422 {"message": "Validation error", "errors": {"ids": ["The ids field is required."]}}
+     */
+    public function bulkDestroy(BulkDestroyRequest $request): SuccessResponse
+    {
+        $deleted = $this->blogService->destroyMultiple($request->validated('ids'));
+        return new SuccessResponse(['deleted_count' => $deleted]);
     }
 }
 

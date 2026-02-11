@@ -17,7 +17,8 @@ readonly class TourService
     public function __construct(
         private TourRepositoryInterface $tourRepository,
         private DiskManager $diskManager,
-    ) {}
+    ) {
+    }
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
@@ -28,7 +29,7 @@ readonly class TourService
     {
         $tour = $this->tourRepository->find($id, ['category', 'departureLocation', 'destinationLocation']);
 
-        if (! $tour) {
+        if (!$tour) {
             throw new NotFoundException('Tour', $id);
         }
 
@@ -53,7 +54,7 @@ readonly class TourService
     {
         $tour = $this->tourRepository->find($id);
 
-        if (! $tour) {
+        if (!$tour) {
             throw new NotFoundException('Tour', $id);
         }
 
@@ -82,7 +83,7 @@ readonly class TourService
     {
         $tour = $this->tourRepository->find($id);
 
-        if (! $tour) {
+        if (!$tour) {
             throw new NotFoundException('Tour', $id);
         }
 
@@ -98,6 +99,29 @@ readonly class TourService
                     $files = array_merge($files, $tour->gallery);
                 }
 
+                $this->diskManager->deleteMany($files);
+            }
+
+            return $deleted;
+        });
+    }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            $tours = $this->tourRepository->findAllBy([['id', 'in', $ids]]);
+            $deleted = $this->tourRepository->deleteMultiple($ids);
+
+            if ($deleted) {
+                $files = [];
+                foreach ($tours as $tour) {
+                    if ($tour->image) {
+                        $files[] = $tour->image;
+                    }
+                    if (is_array($tour->gallery)) {
+                        $files = array_merge($files, $tour->gallery);
+                    }
+                }
                 $this->diskManager->deleteMany($files);
             }
 

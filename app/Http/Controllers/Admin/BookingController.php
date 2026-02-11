@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Context\QueryContext;
 use App\Exception\NotFoundException;
+use App\Http\Requests\Admin\Booking\ExportRequest;
 use App\Http\Requests\Admin\Booking\StoreRequest;
 use App\Http\Requests\Admin\Booking\UpdateRequest;
+use App\Http\Requests\Admin\BulkDestroyRequest;
 use App\Http\Resources\Admin\Booking\BookingCollectionResource;
 use App\Http\Resources\Admin\Booking\BookingResource;
 use App\Http\Responses\SuccessResponse;
 use App\Service\Admin\BookingService;
+use App\Service\Admin\ExportBookingService;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
  * @group Bookings
@@ -20,8 +24,10 @@ use Illuminate\Http\Request;
 readonly class BookingController
 {
     public function __construct(
-        private BookingService $bookingService
-    ) {}
+        private BookingService $bookingService,
+        private ExportBookingService $exportBookingService,
+    ) {
+    }
 
     /**
      * Get list of bookings
@@ -154,6 +160,44 @@ readonly class BookingController
         $this->bookingService->destroy($id);
 
         return new SuccessResponse([]);
+    }
+
+    /**
+     * Bulk delete bookings
+     *
+     * Delete multiple bookings at once by providing an array of IDs.
+     * Logs "deleted" event for each booking before deletion.
+     *
+     * @bodyParam ids int[] required Array of booking IDs to delete. Example: [1, 2, 3]
+     *
+     * @response 200 {"message": "Success", "data": {"deleted_count": 3}}
+     * @response 422 {"message": "Validation error", "errors": {"ids": ["The ids field is required."]}}
+     */
+    public function bulkDestroy(BulkDestroyRequest $request): SuccessResponse
+    {
+        $deleted = $this->bookingService->destroyMultiple($request->validated('ids'));
+        return new SuccessResponse(['deleted_count' => $deleted]);
+    }
+
+    /**
+     * Export bookings to Excel
+     *
+     * Exports booking list and items to Excel file with 2 sheets.
+     * Supports filtering by date range, status, payment status, and limit.
+     * File name is auto-generated based on filters.
+     *
+     * @queryParam date_from date nullable Filter from date (YYYY-MM-DD). Example: "2026-02-01"
+     * @queryParam date_to date nullable Filter to date (YYYY-MM-DD). Example: "2026-02-28"
+     * @queryParam status string nullable Filter by booking status. Example: "confirmed"
+     * @queryParam payment_status string nullable Filter by payment status. Example: "paid"
+     * @queryParam limit int nullable Limit number of records (max 10000). Example: 100
+     *
+     * @response 200 file Binary Excel file (.xlsx)
+     * @response 422 {"message": "Validation error", "errors": {...}}
+     */
+    public function export(ExportRequest $request): BinaryFileResponse
+    {
+        return $this->exportBookingService->exportToExcel($request->validated());
     }
 }
 

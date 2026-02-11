@@ -13,7 +13,8 @@ readonly class ConsultationService
 {
     public function __construct(
         private ConsultationRepositoryInterface $consultationRepository,
-    ) {}
+    ) {
+    }
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
@@ -27,7 +28,7 @@ readonly class ConsultationService
     {
         $consultation = $this->consultationRepository->find($id);
 
-        if (! $consultation) {
+        if (!$consultation) {
             throw new NotFoundException('Consultation', $id);
         }
 
@@ -70,6 +71,13 @@ readonly class ConsultationService
 
         return DB::transaction(function () use ($id) {
             return $this->consultationRepository->delete($id);
+        });
+    }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            return $this->consultationRepository->deleteMultiple($ids);
         });
     }
 }

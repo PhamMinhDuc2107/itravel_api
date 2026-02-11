@@ -6,6 +6,7 @@ use App\Context\QueryContext;
 use App\Exception\NotFoundException;
 use App\Http\Requests\Admin\BankAccount\StoreRequest;
 use App\Http\Requests\Admin\BankAccount\UpdateRequest;
+use App\Http\Requests\Admin\BulkDestroyRequest;
 use App\Http\Resources\Admin\BankAccount\BankAccountCollectionResource;
 use App\Http\Resources\Admin\BankAccount\BankAccountResource;
 use App\Http\Responses\SuccessResponse;
@@ -21,7 +22,8 @@ readonly class BankAccountController
 {
     public function __construct(
         private BankAccountService $bankAccountService
-    ) {}
+    ) {
+    }
 
     /**
      * Get list of bank accounts
@@ -109,6 +111,22 @@ readonly class BankAccountController
     {
         $this->bankAccountService->destroy($id);
         return new SuccessResponse([]);
+    }
+
+    /**
+     * Bulk delete bank accounts
+     *
+     * Delete multiple bank accounts at once by providing an array of IDs.
+     *
+     * @bodyParam ids int[] required Array of bank account IDs to delete. Example: [1, 2, 3]
+     *
+     * @response 200 {"message": "Success", "data": {"deleted_count": 3}}
+     * @response 422 {"message": "Validation error", "errors": {"ids": ["The ids field is required."]}}
+     */
+    public function bulkDestroy(BulkDestroyRequest $request): SuccessResponse
+    {
+        $deleted = $this->bankAccountService->destroyMultiple($request->validated('ids'));
+        return new SuccessResponse(['deleted_count' => $deleted]);
     }
 }
 

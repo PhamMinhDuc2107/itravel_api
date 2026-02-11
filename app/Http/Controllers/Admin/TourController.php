@@ -6,6 +6,7 @@ use App\Context\QueryContext;
 use App\Exception\NotFoundException;
 use App\Http\Requests\Admin\Tour\StoreRequest;
 use App\Http\Requests\Admin\Tour\UpdateRequest;
+use App\Http\Requests\Admin\BulkDestroyRequest;
 use App\Http\Resources\Admin\Tour\TourCollectionResource;
 use App\Http\Resources\Admin\Tour\TourResource;
 use App\Http\Responses\SuccessResponse;
@@ -21,7 +22,8 @@ readonly class TourController
 {
     public function __construct(
         private TourService $tourService
-    ) {}
+    ) {
+    }
 
     /**
      * Get list of tours
@@ -149,6 +151,22 @@ readonly class TourController
         $this->tourService->destroy($id);
 
         return new SuccessResponse([]);
+    }
+
+    /**
+     * Bulk delete tours
+     *
+     * Delete multiple tours at once by providing an array of IDs.
+     *
+     * @bodyParam ids int[] required Array of tour IDs to delete. Example: [1, 2, 3]
+     *
+     * @response 200 {"message": "Success", "data": {"deleted_count": 3}}
+     * @response 422 {"message": "Validation error", "errors": {"ids": ["The ids field is required."]}}
+     */
+    public function bulkDestroy(BulkDestroyRequest $request): SuccessResponse
+    {
+        $deleted = $this->tourService->destroyMultiple($request->validated('ids'));
+        return new SuccessResponse(['deleted_count' => $deleted]);
     }
 }
 

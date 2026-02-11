@@ -19,11 +19,48 @@ readonly class BookingService
         private BookingRepositoryInterface $bookingRepository,
         private BookingLogRepositoryInterface $bookingLogRepository,
         private Request $request,
-    ) {}
+    ) {
+    }
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
         return $this->bookingRepository->list($context, $searchFields);
+    }
+
+    /**
+     * Get bookings for export with filters
+     */
+    public function getForExport(array $filters = [])
+    {
+        $query = $this->bookingRepository->getModel()
+            ->with(['items.passengers', 'user'])
+            ->orderBy('created_at', 'desc');
+
+        // Filter by date range
+        if (!empty($filters['date_from'])) {
+            $query->whereDate('created_at', '>=', $filters['date_from']);
+        }
+
+        if (!empty($filters['date_to'])) {
+            $query->whereDate('created_at', '<=', $filters['date_to']);
+        }
+
+        // Filter by status
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        // Filter by payment_status
+        if (!empty($filters['payment_status'])) {
+            $query->where('payment_status', $filters['payment_status']);
+        }
+
+        // Limit results
+        if (!empty($filters['limit'])) {
+            $query->limit($filters['limit']);
+        }
+
+        return $query->get();
     }
 
     /**
@@ -33,7 +70,7 @@ readonly class BookingService
     {
         $booking = $this->bookingRepository->find($id, ['user', 'items.passengers', 'items.productable', 'logs']);
 
-        if (! $booking) {
+        if (!$booking) {
             throw new NotFoundException('Booking', $id);
         }
 
@@ -70,7 +107,7 @@ readonly class BookingService
     {
         $booking = $this->bookingRepository->find($id);
 
-        if (! $booking) {
+        if (!$booking) {
             throw new NotFoundException('Booking', $id);
         }
 
@@ -123,13 +160,26 @@ readonly class BookingService
     {
         $booking = $this->bookingRepository->find($id);
 
-        if (! $booking) {
+        if (!$booking) {
             throw new NotFoundException('Booking', $id);
         }
 
         return DB::transaction(function () use ($id, $booking) {
             $this->logBooking($booking, 'deleted', null);
             return $this->bookingRepository->delete($id);
+        });
+    }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            $bookings = $this->bookingRepository->findAllBy([['id', 'in', $ids]]);
+
+            foreach ($bookings as $booking) {
+                $this->logBooking($booking, 'deleted', null);
+            }
+
+            return $this->bookingRepository->deleteMultiple($ids);
         });
     }
 

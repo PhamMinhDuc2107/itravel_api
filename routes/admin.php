@@ -32,6 +32,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [AdminController::class, 'store'])->name('admin.admins.store');
         Route::get('/{id}', [AdminController::class, 'show'])->name('admin.admins.show');
         Route::put('/{id}', [AdminController::class, 'update'])->name('admin.admins.update');
+        Route::delete('/bulk-destroy', [AdminController::class, 'bulkDestroy'])->name('admin.admins.bulk-destroy');
         Route::delete('/{id}', [AdminController::class, 'destroy'])->name('admin.admins.destroy');
     });
     // CATEGORIES
@@ -40,6 +41,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [CategoryController::class, 'store'])->name('admin.categories.store');
         Route::get('/{id}', [CategoryController::class, 'show'])->name('admin.categories.show');
         Route::put('/{id}', [CategoryController::class, 'update'])->name('admin.categories.update');
+        Route::delete('/bulk-destroy', [CategoryController::class, 'bulkDestroy'])->name('admin.categories.bulk-destroy');
         Route::delete('/{id}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
     });
     // BANNERS
@@ -48,6 +50,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [BannerController::class, 'store'])->name('admin.banners.store');
         Route::get('/{id}', [BannerController::class, 'show'])->name('admin.banners.show');
         Route::put('/{id}', [BannerController::class, 'update'])->name('admin.banners.update');
+        Route::delete('/bulk-destroy', [BannerController::class, 'bulkDestroy'])->name('admin.banners.bulk-destroy');
         Route::delete('/{id}', [BannerController::class, 'destroy'])->name('admin.banners.destroy');
     });
     // LOCATIONS
@@ -56,6 +59,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [LocationController::class, 'store'])->name('admin.locations.store');
         Route::get('/{id}', [LocationController::class, 'show'])->name('admin.locations.show');
         Route::put('/{id}', [LocationController::class, 'update'])->name('admin.locations.update');
+        Route::delete('/bulk-destroy', [LocationController::class, 'bulkDestroy'])->name('admin.locations.bulk-destroy');
         Route::delete('/{id}', [LocationController::class, 'destroy'])->name('admin.locations.destroy');
     });
     // BLOG_CATEGORIES
@@ -64,6 +68,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [BlogCategoryController::class, 'store'])->name('admin.blog-categories.store');
         Route::get('/{id}', [BlogCategoryController::class, 'show'])->name('admin.blog-categories.show');
         Route::put('/{id}', [BlogCategoryController::class, 'update'])->name('admin.blog-categories.update');
+        Route::delete('/bulk-destroy', [BlogCategoryController::class, 'bulkDestroy'])->name('admin.blog-categories.bulk-destroy');
         Route::delete('/{id}', [BlogCategoryController::class, 'destroy'])->name('admin.blog-categories.destroy');
     });
     // BLOGS
@@ -72,6 +77,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [BlogController::class, 'store'])->name('admin.blogs.store');
         Route::get('/{id}', [BlogController::class, 'show'])->name('admin.blogs.show');
         Route::put('/{id}', [BlogController::class, 'update'])->name('admin.blogs.update');
+        Route::delete('/bulk-destroy', [BlogController::class, 'bulkDestroy'])->name('admin.blogs.bulk-destroy');
         Route::delete('/{id}', [BlogController::class, 'destroy'])->name('admin.blogs.destroy');
     });
     //SUPPORT_TEAM
@@ -80,6 +86,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [SupportTeamController::class, 'store'])->name('admin.support-team.store');
         Route::get('/{id}', [SupportTeamController::class, 'show'])->name('admin.support-team.show');
         Route::put('/{id}', [SupportTeamController::class, 'update'])->name('admin.support-team.update');
+        Route::delete('/bulk-destroy', [SupportTeamController::class, 'bulkDestroy'])->name('admin.support-team.bulk-destroy');
         Route::delete('/{id}', [SupportTeamController::class, 'destroy'])->name('admin.support-team.destroy');
     });
     // BANK_ACCOUNT
@@ -88,6 +95,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [BankAccountController::class, 'store'])->name('admin.bank-accounts.store');
         Route::get('/{id}', [BankAccountController::class, 'show'])->name('admin.bank-accounts.show');
         Route::put('/{id}', [BankAccountController::class, 'update'])->name('admin.bank-accounts.update');
+        Route::delete('/bulk-destroy', [BankAccountController::class, 'bulkDestroy'])->name('admin.bank-accounts.bulk-destroy');
         Route::delete('/{id}', [BankAccountController::class, 'destroy'])->name('admin.bank-accounts.destroy');
     });
     // CONSULTATIONS
@@ -96,6 +104,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [ConsultationController::class, 'store'])->name('admin.consultations.store');
         Route::get('/{id}', [ConsultationController::class, 'show'])->name('admin.consultations.show');
         Route::put('/{id}', [ConsultationController::class, 'update'])->name('admin.consultations.update');
+        Route::delete('/bulk-destroy', [ConsultationController::class, 'bulkDestroy'])->name('admin.consultations.bulk-destroy');
         Route::delete('/{id}', [ConsultationController::class, 'destroy'])->name('admin.consultations.destroy');
     });
     // TOURS
@@ -104,6 +113,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [TourController::class, 'store'])->name('admin.tours.store');
         Route::get('/{id}', [TourController::class, 'show'])->name('admin.tours.show');
         Route::put('/{id}', [TourController::class, 'update'])->name('admin.tours.update');
+        Route::delete('/bulk-destroy', [TourController::class, 'bulkDestroy'])->name('admin.tours.bulk-destroy');
         Route::delete('/{id}', [TourController::class, 'destroy'])->name('admin.tours.destroy');
     });
     // AMENITIES
@@ -112,6 +122,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [AmenityController::class, 'store'])->name('admin.amenities.store');
         Route::get('/{id}', [AmenityController::class, 'show'])->name('admin.amenities.show');
         Route::put('/{id}', [AmenityController::class, 'update'])->name('admin.amenities.update');
+        Route::delete('/bulk-destroy', [AmenityController::class, 'bulkDestroy'])->name('admin.amenities.bulk-destroy');
         Route::delete('/{id}', [AmenityController::class, 'destroy'])->name('admin.amenities.destroy');
     });
     // HOTELS
@@ -120,6 +131,7 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [HotelController::class, 'store'])->name('admin.hotels.store');
         Route::get('/{id}', [HotelController::class, 'show'])->name('admin.hotels.show');
         Route::put('/{id}', [HotelController::class, 'update'])->name('admin.hotels.update');
+        Route::delete('/bulk-destroy', [HotelController::class, 'bulkDestroy'])->name('admin.hotels.bulk-destroy');
         Route::delete('/{id}', [HotelController::class, 'destroy'])->name('admin.hotels.destroy');
     });
     // HOTEL REVIEWS
@@ -128,14 +140,17 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [HotelReviewController::class, 'store'])->name('admin.hotel-reviews.store');
         Route::get('/{id}', [HotelReviewController::class, 'show'])->name('admin.hotel-reviews.show');
         Route::put('/{id}', [HotelReviewController::class, 'update'])->name('admin.hotel-reviews.update');
+        Route::delete('/bulk-destroy', [HotelReviewController::class, 'bulkDestroy'])->name('admin.hotel-reviews.bulk-destroy');
         Route::delete('/{id}', [HotelReviewController::class, 'destroy'])->name('admin.hotel-reviews.destroy');
     });
     // BOOKINGS
     Route::prefix('bookings')->group(function () {
         Route::get('/', [BookingController::class, 'index'])->name('admin.bookings.index');
         Route::post('/', [BookingController::class, 'store'])->name('admin.bookings.store');
+        Route::get('/export', [BookingController::class, 'export'])->name('admin.bookings.export');
         Route::get('/{id}', [BookingController::class, 'show'])->name('admin.bookings.show');
         Route::put('/{id}', [BookingController::class, 'update'])->name('admin.bookings.update');
+        Route::delete('/bulk-destroy', [BookingController::class, 'bulkDestroy'])->name('admin.bookings.bulk-destroy');
         Route::delete('/{id}', [BookingController::class, 'destroy'])->name('admin.bookings.destroy');
     });
 

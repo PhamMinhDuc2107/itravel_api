@@ -6,6 +6,7 @@ use App\Context\QueryContext;
 use App\Exception\NotFoundException;
 use App\Http\Requests\Admin\HotelReview\StoreRequest;
 use App\Http\Requests\Admin\HotelReview\UpdateRequest;
+use App\Http\Requests\Admin\BulkDestroyRequest;
 use App\Http\Resources\Admin\HotelReview\HotelReviewCollectionResource;
 use App\Http\Resources\Admin\HotelReview\HotelReviewResource;
 use App\Http\Responses\SuccessResponse;
@@ -21,7 +22,8 @@ readonly class HotelReviewController
 {
     public function __construct(
         private HotelReviewService $hotelReviewService
-    ) {}
+    ) {
+    }
 
     /**
      * Get list of hotel reviews
@@ -115,6 +117,22 @@ readonly class HotelReviewController
         $this->hotelReviewService->destroy($id);
 
         return new SuccessResponse([]);
+    }
+
+    /**
+     * Bulk delete hotel reviews
+     *
+     * Delete multiple hotel reviews at once by providing an array of IDs.
+     *
+     * @bodyParam ids int[] required Array of hotel review IDs to delete. Example: [1, 2, 3]
+     *
+     * @response 200 {"message": "Success", "data": {"deleted_count": 3}}
+     * @response 422 {"message": "Validation error", "errors": {"ids": ["The ids field is required."]}}
+     */
+    public function bulkDestroy(BulkDestroyRequest $request): SuccessResponse
+    {
+        $deleted = $this->hotelReviewService->destroyMultiple($request->validated('ids'));
+        return new SuccessResponse(['deleted_count' => $deleted]);
     }
 }
 

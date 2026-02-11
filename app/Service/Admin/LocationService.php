@@ -17,7 +17,8 @@ readonly class LocationService
     public function __construct(
         private LocationRepositoryInterface $locationRepository,
         private DiskManager $diskManager,
-    ) {}
+    ) {
+    }
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
@@ -31,7 +32,7 @@ readonly class LocationService
     {
         $location = $this->locationRepository->find($id);
 
-        if (! $location) {
+        if (!$location) {
             throw new NotFoundException('Location', $id);
         }
 
@@ -114,6 +115,24 @@ readonly class LocationService
 
             if ($deleted && $location->image) {
                 $this->diskManager->delete($location->image);
+            }
+
+            return $deleted;
+        });
+    }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            $locations = $this->locationRepository->findAllBy([['id', 'in', $ids]]);
+            $deleted = $this->locationRepository->deleteMultiple($ids);
+
+            if ($deleted) {
+                foreach ($locations as $location) {
+                    if ($location->image) {
+                        $this->diskManager->delete($location->image);
+                    }
+                }
             }
 
             return $deleted;

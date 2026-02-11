@@ -6,6 +6,7 @@ use App\Context\QueryContext;
 use App\Exception\NotFoundException;
 use App\Http\Requests\Admin\Amenity\StoreRequest;
 use App\Http\Requests\Admin\Amenity\UpdateRequest;
+use App\Http\Requests\Admin\BulkDestroyRequest;
 use App\Http\Resources\Admin\Amenity\AmenityCollectionResource;
 use App\Http\Resources\Admin\Amenity\AmenityResource;
 use App\Http\Responses\SuccessResponse;
@@ -21,7 +22,8 @@ readonly class AmenityController
 {
     public function __construct(
         private AmenityService $amenityService
-    ) {}
+    ) {
+    }
 
     /**
      * Get list of amenities
@@ -111,6 +113,22 @@ readonly class AmenityController
         $this->amenityService->destroy($id);
 
         return new SuccessResponse([]);
+    }
+
+    /**
+     * Bulk delete amenities
+     *
+     * Delete multiple amenities at once by providing an array of IDs.
+     *
+     * @bodyParam ids int[] required Array of amenity IDs to delete. Example: [1, 2, 3]
+     *
+     * @response 200 {"message": "Success", "data": {"deleted_count": 3}}
+     * @response 422 {"message": "Validation error", "errors": {"ids": ["The ids field is required."]}}
+     */
+    public function bulkDestroy(BulkDestroyRequest $request): SuccessResponse
+    {
+        $deleted = $this->amenityService->destroyMultiple($request->validated('ids'));
+        return new SuccessResponse(['deleted_count' => $deleted]);
     }
 }
 

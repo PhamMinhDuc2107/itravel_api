@@ -13,7 +13,8 @@ readonly class BlogCategoryService
 {
     public function __construct(
         private BlogCategoryRepositoryInterface $blogCategoryRepository,
-    ) {}
+    ) {
+    }
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
@@ -27,7 +28,7 @@ readonly class BlogCategoryService
     {
         $category = $this->blogCategoryRepository->find($id);
 
-        if (! $category) {
+        if (!$category) {
             throw new NotFoundException('Blog Category', $id);
         }
 
@@ -70,6 +71,13 @@ readonly class BlogCategoryService
 
         return DB::transaction(function () use ($id) {
             return $this->blogCategoryRepository->delete($id);
+        });
+    }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            return $this->blogCategoryRepository->deleteMultiple($ids);
         });
     }
 }

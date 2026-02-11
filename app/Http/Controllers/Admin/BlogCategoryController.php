@@ -6,6 +6,7 @@ use App\Context\QueryContext;
 use App\Exception\NotFoundException;
 use App\Http\Requests\Admin\BlogCategory\StoreRequest;
 use App\Http\Requests\Admin\BlogCategory\UpdateRequest;
+use App\Http\Requests\Admin\BulkDestroyRequest;
 use App\Http\Resources\Admin\BlogCategory\BlogCategoryCollectionResource;
 use App\Http\Resources\Admin\BlogCategory\BlogCategoryResource;
 use App\Http\Responses\SuccessResponse;
@@ -21,7 +22,8 @@ readonly class BlogCategoryController
 {
     public function __construct(
         private BlogCategoryService $blogCategoryService
-    ) {}
+    ) {
+    }
 
     /**
      * Get list of blog categories
@@ -108,6 +110,22 @@ readonly class BlogCategoryController
     {
         $this->blogCategoryService->destroy($id);
         return new SuccessResponse([]);
+    }
+
+    /**
+     * Bulk delete blog categories
+     *
+     * Delete multiple blog categories at once by providing an array of IDs.
+     *
+     * @bodyParam ids int[] required Array of blog category IDs to delete. Example: [1, 2, 3]
+     *
+     * @response 200 {"message": "Success", "data": {"deleted_count": 3}}
+     * @response 422 {"message": "Validation error", "errors": {"ids": ["The ids field is required."]}}
+     */
+    public function bulkDestroy(BulkDestroyRequest $request): SuccessResponse
+    {
+        $deleted = $this->blogCategoryService->destroyMultiple($request->validated('ids'));
+        return new SuccessResponse(['deleted_count' => $deleted]);
     }
 }
 

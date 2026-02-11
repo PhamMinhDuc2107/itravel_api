@@ -6,6 +6,7 @@ use App\Context\QueryContext;
 use App\Exception\NotFoundException;
 use App\Http\Requests\Admin\Banner\StoreRequest;
 use App\Http\Requests\Admin\Banner\UpdateRequest;
+use App\Http\Requests\Admin\BulkDestroyRequest;
 use App\Http\Resources\Admin\Banner\BannerCollectionResource;
 use App\Http\Resources\Admin\Banner\BannerResource;
 use App\Http\Responses\SuccessResponse;
@@ -21,7 +22,8 @@ readonly class BannerController
 {
     public function __construct(
         private BannerService $bannerService
-    ) {}
+    ) {
+    }
 
     /**
      * Get list of banners
@@ -118,6 +120,22 @@ readonly class BannerController
     {
         $this->bannerService->destroy($id);
         return new SuccessResponse([]);
+    }
+
+    /**
+     * Bulk delete banners
+     *
+     * Delete multiple banners at once by providing an array of IDs.
+     *
+     * @bodyParam ids int[] required Array of banner IDs to delete. Example: [1, 2, 3]
+     *
+     * @response 200 {"message": "Success", "data": {"deleted_count": 3}}
+     * @response 422 {"message": "Validation error", "errors": {"ids": ["The ids field is required."]}}
+     */
+    public function bulkDestroy(BulkDestroyRequest $request): SuccessResponse
+    {
+        $deleted = $this->bannerService->destroyMultiple($request->validated('ids'));
+        return new SuccessResponse(['deleted_count' => $deleted]);
     }
 }
 

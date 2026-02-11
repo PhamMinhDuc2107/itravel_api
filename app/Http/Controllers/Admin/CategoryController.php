@@ -6,6 +6,7 @@ use App\Context\QueryContext;
 use App\Exception\NotFoundException;
 use App\Http\Requests\Admin\Category\StoreRequest;
 use App\Http\Requests\Admin\Category\UpdateRequest;
+use App\Http\Requests\Admin\BulkDestroyRequest;
 use App\Http\Resources\Admin\Category\CategoryCollectionResource;
 use App\Http\Resources\Admin\Category\CategoryResource;
 use App\Http\Responses\SuccessResponse;
@@ -21,22 +22,30 @@ readonly class CategoryController
 {
     public function __construct(
         private CategoryService $categoryService
-    ) {}
+    ) {
+    }
 
     /**
      * Get list of categories
      * 
      * @queryParam page int Page number. Example: 1
      * @queryParam per_page int Items per page. Example: 15
-     * @queryParam search string Search term. Example: "travel"
+     * @queryParam q string Search term (searches: name, slug, description). Example: "travel"
+     * @queryParam search_by string Specific field to search. Example: "name"
      * @queryParam sort string Sort field. Example: "name"
      * @queryParam order string Sort direction (asc/desc). Example: "asc"
+     * @queryParam status int Filter by status (0 or 1). Example: 1
+     * @queryParam parent_id int Filter by parent category ID. Example: 1
      * 
      * @response 200 {"data": [{"id": 1, "name": "Travel", "slug": "travel", ...}]}
      */
     public function index(Request $request): CategoryCollectionResource
     {
-        $context = QueryContext::fromRequest($request);
+        // Define filterable columns for this endpoint
+        $filterableColumns = ['status', 'parent_id'];
+
+        $context = QueryContext::fromRequest($request, $filterableColumns);
+
         return (new CategoryCollectionResource($this->categoryService->list($context)));
     }
 
@@ -108,6 +117,22 @@ readonly class CategoryController
     {
         $this->categoryService->destroy($id);
         return new SuccessResponse([]);
+    }
+
+    /**
+     * Bulk delete categories
+     *
+     * Delete multiple categories at once by providing an array of IDs.
+     *
+     * @bodyParam ids int[] required Array of category IDs to delete. Example: [1, 2, 3]
+     *
+     * @response 200 {"message": "Success", "data": {"deleted_count": 3}}
+     * @response 422 {"message": "Validation error", "errors": {"ids": ["The ids field is required."]}}
+     */
+    public function bulkDestroy(BulkDestroyRequest $request): SuccessResponse
+    {
+        $deleted = $this->categoryService->destroyMultiple($request->validated('ids'));
+        return new SuccessResponse(['deleted_count' => $deleted]);
     }
 }
 

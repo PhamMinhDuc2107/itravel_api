@@ -17,7 +17,8 @@ readonly class AmenityService
     public function __construct(
         private AmenityRepositoryInterface $amenityRepository,
         private DiskManager $diskManager,
-    ) {}
+    ) {
+    }
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
@@ -31,7 +32,7 @@ readonly class AmenityService
     {
         $amenity = $this->amenityRepository->find($id);
 
-        if (! $amenity) {
+        if (!$amenity) {
             throw new NotFoundException('Amenity', $id);
         }
 
@@ -65,7 +66,7 @@ readonly class AmenityService
     {
         $amenity = $this->amenityRepository->find($id);
 
-        if (! $amenity) {
+        if (!$amenity) {
             throw new NotFoundException('Amenity', $id);
         }
 
@@ -102,7 +103,7 @@ readonly class AmenityService
     {
         $amenity = $this->amenityRepository->find($id);
 
-        if (! $amenity) {
+        if (!$amenity) {
             throw new NotFoundException('Amenity', $id);
         }
 
@@ -111,6 +112,26 @@ readonly class AmenityService
 
             if ($deleted && $amenity->icon) {
                 $this->diskManager->deleteMany([$amenity->icon]);
+            }
+
+            return $deleted;
+        });
+    }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            $amenities = $this->amenityRepository->findAllBy([['id', 'in', $ids]]);
+            $deleted = $this->amenityRepository->deleteMultiple($ids);
+
+            if ($deleted) {
+                $files = [];
+                foreach ($amenities as $amenity) {
+                    if ($amenity->icon) {
+                        $files[] = $amenity->icon;
+                    }
+                }
+                $this->diskManager->deleteMany($files);
             }
 
             return $deleted;

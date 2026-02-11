@@ -18,7 +18,8 @@ readonly class AdminService
     public function __construct(
         private AdminRepositoryInterface $adminRepository,
         private DiskManager $diskManager,
-    ) {}
+    ) {
+    }
 
     public function list(QueryContext $context, array $searchFields = []): LengthAwarePaginator
     {
@@ -32,7 +33,7 @@ readonly class AdminService
     {
         $admin = $this->adminRepository->find($id);
 
-        if (! $admin) {
+        if (!$admin) {
             throw new NotFoundException('Admins', $id);
         }
 
@@ -47,7 +48,8 @@ readonly class AdminService
             try {
 
                 if (isset($data['avatar']) && $data['avatar'] instanceof UploadedFile) {
-                    $uploadedPath = $this->uploadImageAvatar($data['avatar']);;
+                    $uploadedPath = $this->uploadImageAvatar($data['avatar']);
+                    ;
                     $data['avatar'] = $uploadedPath;
                 }
 
@@ -134,6 +136,25 @@ readonly class AdminService
             return $deleted;
         });
     }
+
+    public function destroyMultiple(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            $admins = $this->adminRepository->findAllBy([['id', 'in', $ids]]);
+            $deleted = $this->adminRepository->deleteMultiple($ids);
+
+            if ($deleted) {
+                foreach ($admins as $admin) {
+                    if ($admin->avatar) {
+                        $this->diskManager->delete($admin->avatar);
+                    }
+                }
+            }
+
+            return $deleted;
+        });
+    }
+
     private function uploadImageAvatar(UploadedFile $file): string
     {
         $module = UploadConstant::AVATAR_MODULE;

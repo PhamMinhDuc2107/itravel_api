@@ -6,6 +6,7 @@ use App\Context\QueryContext;
 use App\Exception\NotFoundException;
 use App\Http\Requests\Admin\SupportTeam\StoreRequest;
 use App\Http\Requests\Admin\SupportTeam\UpdateRequest;
+use App\Http\Requests\Admin\BulkDestroyRequest;
 use App\Http\Resources\Admin\SupportTeam\SupportTeamCollectionResource;
 use App\Http\Resources\Admin\SupportTeam\SupportTeamResource;
 use App\Http\Responses\SuccessResponse;
@@ -21,7 +22,8 @@ readonly class SupportTeamController
 {
     public function __construct(
         private SupportTeamService $supportTeamService
-    ) {}
+    ) {
+    }
 
     /**
      * Get list of support team members
@@ -110,6 +112,22 @@ readonly class SupportTeamController
     {
         $this->supportTeamService->destroy($id);
         return new SuccessResponse([]);
+    }
+
+    /**
+     * Bulk delete support team members
+     *
+     * Delete multiple support team members at once by providing an array of IDs.
+     *
+     * @bodyParam ids int[] required Array of support team member IDs to delete. Example: [1, 2, 3]
+     *
+     * @response 200 {"message": "Success", "data": {"deleted_count": 3}}
+     * @response 422 {"message": "Validation error", "errors": {"ids": ["The ids field is required."]}}
+     */
+    public function bulkDestroy(BulkDestroyRequest $request): SuccessResponse
+    {
+        $deleted = $this->supportTeamService->destroyMultiple($request->validated('ids'));
+        return new SuccessResponse(['deleted_count' => $deleted]);
     }
 }
 
