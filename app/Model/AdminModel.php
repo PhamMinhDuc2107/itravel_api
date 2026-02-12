@@ -34,6 +34,10 @@ class AdminModel extends Authenticatable
         'status' => ActiveStateEnum::class,
     ];
 
+    protected $appends = [
+        'avatar_url',
+    ];
+
 
     public function refreshTokens(): MorphMany
     {

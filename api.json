@@ -2944,6 +2944,67 @@
                 }
             }
         },
+        "/admin/tours/import": {
+            "post": {
+                "operationId": "admin.tours.import",
+                "summary": "Import tours from Excel\r\n\r\nUpload a multi-sheet Excel file (.xlsx, .xls, .csv) containing tour data.\r\nThe file is processed in the background via a queue job.\r\nAPI responds immediately without waiting for import to complete.\r\n\r\nExcel must have 3 sheets:\r\n- Sheet 1 \"Tours\": tour data (code, name, slug, category_id, locations, prices, etc.)\r\n- Sheet 2 \"L\u1ecbch tr\u00ecnh\": itineraries linked by tour_code (day_number, title, content)\r\n- Sheet 3 \"Ng\u00e0y kh\u1edfi h\u00e0nh\": departures linked by tour_code (start_date, prices, stock)\r\n\r\nImage and gallery fields are skipped during import.\r\nUse `php artisan tour:generate-template` to get a sample file",
+                "tags": [
+                    "Tour"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ImportTourRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "integer",
+                                    "enum": [
+                                        200
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/tours/download-template": {
+            "get": {
+                "operationId": "admin.tours.download-template",
+                "summary": "Download import template\r\n\r\nDownload the Excel template file for bulk tour import.\r\nThe template contains 4 sheets:\r\n\r\n**Sheet 1 - \"Tours\":** Main tour data with sample rows.\r\nColumns: code (required), name (required), slug (auto-generated if empty),\r\ncategory_id, departure_location_id (required), destination_location_id (required),\r\nduration_days (required), duration_nights, price_adult (required), price_child,\r\nprice_infant, excerpt, overview, policy, included, excluded,\r\nstatus (0=Draft, 1=Published, 2=Closed, 3=Hidden), meta_title, meta_description.\r\n\r\n**Sheet 2 - \"L\u1ecbch tr\u00ecnh\" (Itineraries):** Tour itineraries linked by tour_code.\r\nColumns: tour_code (required, must match code in Sheet 1), day_number (required),\r\nposition, title (required), content.\r\n\r\n**Sheet 3 - \"Ng\u00e0y kh\u1edfi h\u00e0nh\" (Departures):** Tour departures linked by tour_code.\r\nColumns: tour_code (required), start_date (required, YYYY-MM-DD),\r\nprice_adult (required), original_price_adult, price_child, original_price_child,\r\nprice_infant, original_price_infant, stock (required), booked,\r\nstatus (available/sold_out/closed).\r\n\r\n**Sheet 4 - \"H\u01b0\u1edbng d\u1eabn\":** Detailed instructions for each column",
+                "tags": [
+                    "Tour"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "integer",
+                                    "enum": [
+                                        200
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/admin/tours/{id}": {
             "get": {
                 "operationId": "admin.tours.show",
@@ -5677,6 +5738,21 @@
                     "cancelled"
                 ],
                 "title": "ConsultationStatusEnum"
+            },
+            "ImportTourRequest": {
+                "type": "object",
+                "properties": {
+                    "file": {
+                        "type": "string",
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "maxLength": 10240
+                    }
+                },
+                "required": [
+                    "file"
+                ],
+                "title": "ImportTourRequest"
             },
             "LocationTypeEnum": {
                 "type": "string",

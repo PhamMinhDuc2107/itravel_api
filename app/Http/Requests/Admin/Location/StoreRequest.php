@@ -42,7 +42,7 @@ class StoreRequest extends FormRequest
             'status' => [
                 'required',
                 'string',
-                Rule::enum(ActiveStateEnum::class),
+                'in:0,1',
             ],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],

@@ -32,6 +32,11 @@ class BankAccountModel extends Model
         'status' => 'integer',
     ];
 
+    protected $appends = [
+        'logo_url',
+        'qr_code_url',
+    ];
+
     protected function logoUrl(): Attribute
     {
         return Attribute::make(

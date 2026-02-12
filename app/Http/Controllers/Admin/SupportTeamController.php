@@ -36,8 +36,10 @@ readonly class SupportTeamController
      */
     public function index(Request $request): SupportTeamCollectionResource
     {
-        $context = QueryContext::fromRequest($request);
-        return (new SupportTeamCollectionResource($this->supportTeamService->list($context)));
+        $filterableColumns = ['status', 'role', 'group'];
+        $context = QueryContext::fromRequest($request, $filterableColumns);
+        $searchFields = ['name', 'phone', 'zalo'];
+        return (new SupportTeamCollectionResource($this->supportTeamService->list($context, $searchFields)));
     }
 
     /**

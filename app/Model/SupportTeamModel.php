@@ -36,6 +36,10 @@ class SupportTeamModel extends Model
         'group' => SupportTeamGroupEnum::class,
     ];
 
+    protected $appends = [
+        'avatar_url',
+    ];
+
     protected function avatarUrl(): Attribute
     {
         return Attribute::make(

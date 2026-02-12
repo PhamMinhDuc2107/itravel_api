@@ -124,7 +124,7 @@ readonly class SupportTeamService
     public function destroyMultiple(array $ids): int
     {
         return DB::transaction(function () use ($ids) {
-            $members = $this->supportTeamRepository->findAllBy([['id', 'in', $ids]]);
+            $members = $this->supportTeamRepository->findAllBy(['id' => $ids]);
             $deleted = $this->supportTeamRepository->deleteMultiple($ids);
 
             if ($deleted) {

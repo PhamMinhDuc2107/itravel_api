@@ -6,12 +6,14 @@ use App\Context\QueryContext;
 use App\Exception\NotFoundException;
 use App\Http\Requests\Admin\Tour\StoreRequest;
 use App\Http\Requests\Admin\Tour\UpdateRequest;
+use App\Http\Requests\Admin\Tour\ImportTourRequest;
 use App\Http\Requests\Admin\BulkDestroyRequest;
 use App\Http\Resources\Admin\Tour\TourCollectionResource;
 use App\Http\Resources\Admin\Tour\TourResource;
 use App\Http\Responses\SuccessResponse;
 use App\Service\Admin\TourService;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
  * @group Tours
@@ -167,6 +169,71 @@ readonly class TourController
     {
         $deleted = $this->tourService->destroyMultiple($request->validated('ids'));
         return new SuccessResponse(['deleted_count' => $deleted]);
+    }
+
+    /**
+     * Import tours from Excel
+     *
+     * Upload a multi-sheet Excel file (.xlsx, .xls, .csv) containing tour data.
+     * The file is processed in the background via a queue job.
+     * API responds immediately without waiting for import to complete.
+     *
+     * Excel must have 3 sheets:
+     * - Sheet 1 "Tours": tour data (code, name, slug, category_id, locations, prices, etc.)
+     * - Sheet 2 "Lịch trình": itineraries linked by tour_code (day_number, title, content)
+     * - Sheet 3 "Ngày khởi hành": departures linked by tour_code (start_date, prices, stock)
+     *
+     * Image and gallery fields are skipped during import.
+     * Use `php artisan tour:generate-template` to get a sample file.
+     *
+     * @bodyParam file file required Excel file (.xlsx, .xls, .csv). Max 10MB.
+     *
+     * @response 200 {"data": {"message": "Import queued for background processing", "file": "tour_import_20260211175400_abc123.xlsx"}}
+     * @response 422 {"message": "Validation error", "errors": {"file": ["The file field is required."]}}
+     */
+    public function import(ImportTourRequest $request): SuccessResponse
+    {
+        $result = $this->tourService->import($request->file('file'));
+
+        return new SuccessResponse($result);
+    }
+
+    /**
+     * Download import template
+     *
+     * Download the Excel template file for bulk tour import.
+     * The template contains 4 sheets:
+     *
+     * **Sheet 1 - "Tours":** Main tour data with sample rows.
+     * Columns: code (required), name (required), slug (auto-generated if empty),
+     * category_id, departure_location_id (required), destination_location_id (required),
+     * duration_days (required), duration_nights, price_adult (required), price_child,
+     * price_infant, excerpt, overview, policy, included, excluded,
+     * status (0=Draft, 1=Published, 2=Closed, 3=Hidden), meta_title, meta_description.
+     *
+     * **Sheet 2 - "Lịch trình" (Itineraries):** Tour itineraries linked by tour_code.
+     * Columns: tour_code (required, must match code in Sheet 1), day_number (required),
+     * position, title (required), content.
+     *
+     * **Sheet 3 - "Ngày khởi hành" (Departures):** Tour departures linked by tour_code.
+     * Columns: tour_code (required), start_date (required, YYYY-MM-DD),
+     * price_adult (required), original_price_adult, price_child, original_price_child,
+     * price_infant, original_price_infant, stock (required), booked,
+     * status (available/sold_out/closed).
+     *
+     * **Sheet 4 - "Hướng dẫn":** Detailed instructions for each column.
+     *
+     * @response 200 file Binary Excel file (.xlsx)
+     */
+    public function downloadTemplate(): BinaryFileResponse
+    {
+        $templatePath = $this->tourService->generateTemplate();
+
+        return response()->download(
+            $templatePath,
+            'tour_import_template.xlsx',
+            ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+        )->deleteFileAfterSend(true);
     }
 }
 

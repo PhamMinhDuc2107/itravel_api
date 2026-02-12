@@ -152,7 +152,7 @@ readonly class BankAccountService
     public function destroyMultiple(array $ids): int
     {
         return DB::transaction(function () use ($ids) {
-            $accounts = $this->bankAccountRepository->findAllBy([['id', 'in', $ids]]);
+            $accounts = $this->bankAccountRepository->findAllBy(['id' => $ids]);
             $deleted = $this->bankAccountRepository->deleteMultiple($ids);
 
             if ($deleted) {

@@ -46,6 +46,7 @@ readonly class AuthService
         $plainRefreshToken = $this->createRefreshToken($admin);
 
         return [
+            'user'          => $admin,
             'access_token'  => $accessToken,
             'refresh_token' => $plainRefreshToken,
             'token_type'    => 'Bearer',

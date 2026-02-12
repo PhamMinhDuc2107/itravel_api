@@ -32,7 +32,10 @@ readonly class LocationController
      * 
      * @queryParam page int Page number. Example: 1
      * @queryParam per_page int Items per page. Example: 15
-     * @queryParam search string Search term. Example: "Ha Noi"
+     * @queryParam q string Search term. Example: "Ha Noi"
+     * @queryParam search_by string Search by specific column (name, slug, description, type). Example: "name"
+     * @queryParam status string Filter by status (0 or 1). Example: "1"
+     * @queryParam type string Filter by type (country, region, province, attraction). Example: "province"
      * @queryParam sort string Sort field. Example: "name"
      * @queryParam order string Sort direction (asc/desc). Example: "asc"
      * 
@@ -40,8 +43,11 @@ readonly class LocationController
      */
     public function index(Request $request): LocationCollectionResource
     {
-        $context = QueryContext::fromRequest($request);
-        return (new LocationCollectionResource($this->locationService->list($context)));
+        $filterableColumns = ['status', 'type', 'parent_id', 'display_home', 'is_feature', 'is_departure', 'is_destination'];
+        $context = QueryContext::fromRequest($request, $filterableColumns);
+        
+        $searchFields = ['name', 'slug', 'description', 'type'];
+        return (new LocationCollectionResource($this->locationService->list($context, $searchFields)));
     }
 
     /**

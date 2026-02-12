@@ -22,6 +22,8 @@ class HotelModel extends Model
     public array $searchable = ['name', 'slug', 'excerpt', 'content', 'address'];
     public array $sortable = ['id', 'created_at', 'name', 'star_rating', 'price_from', 'status'];
 
+    protected $appends = ['image_url'];
+
     protected $fillable = [
         'name',
         'slug',

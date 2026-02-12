@@ -35,8 +35,10 @@ readonly class BankAccountController
      */
     public function index(Request $request): BankAccountCollectionResource
     {
-        $context = QueryContext::fromRequest($request);
-        return (new BankAccountCollectionResource($this->bankAccountService->list($context)));
+        $filterableColumns = ['status'];
+        $context = QueryContext::fromRequest($request, $filterableColumns);
+        $searchFields = ['bank_name', 'account_number', 'account_holder'];
+        return (new BankAccountCollectionResource($this->bankAccountService->list($context, $searchFields)));
     }
 
     /**

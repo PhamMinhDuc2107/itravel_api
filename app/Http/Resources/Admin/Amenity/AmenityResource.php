@@ -15,7 +15,7 @@ class AmenityResource extends BaseResource
             'icon' => $this->icon_url,
             'type' => $this->type,
             'position' => $this->position,
-            'status' => $this->status,
+            'status' => $this->status->value ?? $this->status,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];

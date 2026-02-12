@@ -124,7 +124,7 @@ readonly class BlogService
     public function destroyMultiple(array $ids): int
     {
         return DB::transaction(function () use ($ids) {
-            $blogs = $this->blogRepository->findAllBy([['id', 'in', $ids]]);
+            $blogs = $this->blogRepository->findAllBy(['id' => $ids]);
             $deleted = $this->blogRepository->deleteMultiple($ids);
 
             if ($deleted) {

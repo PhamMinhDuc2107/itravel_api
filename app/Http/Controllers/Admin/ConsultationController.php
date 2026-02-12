@@ -36,8 +36,10 @@ readonly class ConsultationController
      */
     public function index(Request $request): ConsultationCollectionResource
     {
-        $context = QueryContext::fromRequest($request);
-        return (new ConsultationCollectionResource($this->consultationService->list($context)));
+        $filterableColumns = ['status', 'productable_type', 'user_id'];
+        $context = QueryContext::fromRequest($request, $filterableColumns);
+        $searchFields = ['name', 'phone', 'email', 'message', 'product_name'];
+        return (new ConsultationCollectionResource($this->consultationService->list($context, $searchFields)));
     }
 
     /**

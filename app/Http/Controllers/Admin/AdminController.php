@@ -36,8 +36,10 @@ readonly class AdminController
      */
     public function index(Request $request): AdminCollectionResource
     {
-        $context = QueryContext::fromRequest($request);
-        return (new AdminCollectionResource($this->adminService->list($context)));
+        $filterableColumns = ['status'];
+        $context = QueryContext::fromRequest($request, $filterableColumns);
+        $searchFields = ['email', 'name', 'phone'];
+        return (new AdminCollectionResource($this->adminService->list($context, $searchFields)));
     }
 
     /**

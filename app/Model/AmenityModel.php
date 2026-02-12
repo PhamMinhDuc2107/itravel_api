@@ -18,6 +18,8 @@ class AmenityModel extends Model
     public array $searchable = ['name', 'code'];
     public array $sortable = ['id', 'created_at', 'name', 'position', 'status'];
 
+    protected $appends = ['icon_url'];
+
     protected $fillable = [
         'name',
         'code',

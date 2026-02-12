@@ -140,7 +140,7 @@ readonly class AdminService
     public function destroyMultiple(array $ids): int
     {
         return DB::transaction(function () use ($ids) {
-            $admins = $this->adminRepository->findAllBy([['id', 'in', $ids]]);
+            $admins = $this->adminRepository->findAllBy(['id' => $ids]);
             $deleted = $this->adminRepository->deleteMultiple($ids);
 
             if ($deleted) {

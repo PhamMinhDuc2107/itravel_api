@@ -21,6 +21,8 @@ class TourModel extends Model
     public array $searchable = ['name', 'slug', 'code', 'excerpt', 'overview'];
     public array $sortable = ['id', 'created_at', 'name', 'position', 'status', 'price_adult'];
 
+    protected $appends = ['image_url'];
+
     protected $fillable = [
         'code',
         'name',

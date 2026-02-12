@@ -124,7 +124,7 @@ readonly class LocationService
     public function destroyMultiple(array $ids): int
     {
         return DB::transaction(function () use ($ids) {
-            $locations = $this->locationRepository->findAllBy([['id', 'in', $ids]]);
+            $locations = $this->locationRepository->findAllBy(['id' => $ids]);
             $deleted = $this->locationRepository->deleteMultiple($ids);
 
             if ($deleted) {

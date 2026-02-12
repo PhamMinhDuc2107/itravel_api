@@ -35,7 +35,7 @@ class UpdateRequest extends FormRequest
                 'max:' . UploadConstant::IMAGE_MAX_SIZE,
             ],
             'category_id' => ['nullable', 'integer', 'exists:blog_categories,id'],
-            'author_id' => ['required', 'integer', 'exists:admins,id'],
+            'author_id' => ['nullable', 'integer', 'exists:admins,id'],
             'status' => [
                 'required',
                 'string',
@@ -58,7 +58,6 @@ class UpdateRequest extends FormRequest
             'slug.unique' => 'Slug already exists',
             'content.required' => 'Content is required',
             'category_id.exists' => 'Blog category does not exist',
-            'author_id.required' => 'Author is required',
             'author_id.exists' => 'Author does not exist',
             'status.required' => 'Status is required',
             'status.enum' => 'Invalid status',

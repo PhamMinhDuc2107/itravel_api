@@ -173,7 +173,7 @@ readonly class BookingService
     public function destroyMultiple(array $ids): int
     {
         return DB::transaction(function () use ($ids) {
-            $bookings = $this->bookingRepository->findAllBy([['id', 'in', $ids]]);
+            $bookings = $this->bookingRepository->findAllBy(['id' => $ids]);
 
             foreach ($bookings as $booking) {
                 $this->logBooking($booking, 'deleted', null);

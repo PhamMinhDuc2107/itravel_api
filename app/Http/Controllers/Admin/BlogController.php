@@ -30,7 +30,11 @@ readonly class BlogController
      * 
      * @queryParam page int Page number. Example: 1
      * @queryParam per_page int Items per page. Example: 15
-     * @queryParam search string Search term. Example: "travel"
+     * @queryParam q string Search term. Example: "travel"
+     * @queryParam search_by string Search by column (name, slug, excerpt, content). Example: "name"
+     * @queryParam status string Filter by status (draft/published/archived). Example: "published"
+     * @queryParam category_id int Filter by category ID. Example: 1
+     * @queryParam is_featured int Filter by featured (0/1). Example: 1
      * @queryParam sort string Sort field. Example: "created_at"
      * @queryParam order string Sort direction (asc/desc). Example: "desc"
      * 
@@ -38,8 +42,11 @@ readonly class BlogController
      */
     public function index(Request $request): BlogCollectionResource
     {
-        $context = QueryContext::fromRequest($request);
-        return (new BlogCollectionResource($this->blogService->list($context)));
+        $filterableColumns = ['status', 'category_id', 'author_id', 'is_featured'];
+        $context = QueryContext::fromRequest($request, $filterableColumns);
+        
+        $searchFields = ['name', 'slug', 'excerpt', 'content'];
+        return (new BlogCollectionResource($this->blogService->list($context, $searchFields)));
     }
 
     /**

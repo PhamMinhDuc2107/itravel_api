@@ -111,6 +111,8 @@ Route::middleware(['admin.auth'])->group(function () {
     Route::prefix('tours')->group(function () {
         Route::get('/', [TourController::class, 'index'])->name('admin.tours.index');
         Route::post('/', [TourController::class, 'store'])->name('admin.tours.store');
+        Route::post('/import', [TourController::class, 'import'])->name('admin.tours.import');
+        Route::get('/download-template', [TourController::class, 'downloadTemplate'])->name('admin.tours.download-template');
         Route::get('/{id}', [TourController::class, 'show'])->name('admin.tours.show');
         Route::put('/{id}', [TourController::class, 'update'])->name('admin.tours.update');
         Route::delete('/bulk-destroy', [TourController::class, 'bulkDestroy'])->name('admin.tours.bulk-destroy');

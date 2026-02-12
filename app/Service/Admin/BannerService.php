@@ -152,7 +152,7 @@ readonly class BannerService
     public function destroyMultiple(array $ids): int
     {
         return DB::transaction(function () use ($ids) {
-            $banners = $this->bannerRepository->findAllBy([['id', 'in', $ids]]);
+            $banners = $this->bannerRepository->findAllBy(['id' => $ids]);
             $deleted = $this->bannerRepository->deleteMultiple($ids);
 
             if ($deleted) {

@@ -121,7 +121,7 @@ readonly class AmenityService
     public function destroyMultiple(array $ids): int
     {
         return DB::transaction(function () use ($ids) {
-            $amenities = $this->amenityRepository->findAllBy([['id', 'in', $ids]]);
+            $amenities = $this->amenityRepository->findAllBy(['id' => $ids]);
             $deleted = $this->amenityRepository->deleteMultiple($ids);
 
             if ($deleted) {

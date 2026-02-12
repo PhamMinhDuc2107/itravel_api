@@ -136,7 +136,7 @@ readonly class HotelService
     public function destroyMultiple(array $ids): int
     {
         return DB::transaction(function () use ($ids) {
-            $hotels = $this->hotelRepository->findAllBy([['id', 'in', $ids]]);
+            $hotels = $this->hotelRepository->findAllBy(['id' => $ids]);
 
             foreach ($hotels as $hotel) {
                 $hotel->amenities()->detach();
